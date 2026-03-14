@@ -5,6 +5,14 @@ Uses TypedDict for type safety and clear contracts.
 
 from typing import TypedDict, List, Dict, Optional, Literal
 
+class VerifiedSource(TypedDict):
+    """Self-contained fact package for the Writer Agent"""
+    id: int
+    subtopic: str
+    extracted_claim: str
+    raw_chunk: str
+    url: str
+
 
 class Claim(TypedDict):
     """Individual factual claim from research"""
@@ -32,10 +40,8 @@ class Source(TypedDict):
 
 class ResearchData(TypedDict):
     """Agent1 output schema"""
-    claims: List[Claim]
-    definitions: List[Definition]
-    top_chunks: List[Chunk]
-    sources: List[Source]
+    definitions: Dict[str, str]
+    sources: List[VerifiedSource]
 
 
 class DraftArticle(TypedDict):

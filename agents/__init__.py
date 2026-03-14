@@ -7,7 +7,7 @@ All agents follow strict I/O contracts defined in state.py.
 Agents are fully replaceable - swap implementations without touching graph logic.
 """
 
-from .research_dummy import research_agent_node
+from .research_agent import research_agent_node
 from .writer_dummy import writer_agent_node
 from .eval_dummy import evaluation_agent_node
 

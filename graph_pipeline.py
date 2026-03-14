@@ -14,7 +14,7 @@ The graph is agent-agnostic: agents can be swapped without modifying pipeline lo
 from typing import Literal, Optional
 from langgraph.graph import StateGraph, END
 from state import PipelineState
-from agents.research_dummy import research_agent_node
+from agents.research_agent import research_agent_node
 from agents.writer_dummy import writer_agent_node
 from agents.eval_dummy import evaluation_agent_node
 from checkpointing import get_checkpoint_manager
