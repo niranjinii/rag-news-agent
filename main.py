@@ -13,6 +13,7 @@ import json
 from typing import Optional
 from graph_pipeline import compile_article_writer_graph, create_initial_state
 from checkpointing import generate_thread_id, get_checkpoint_manager, get_thread_id_with_timestamp
+from adapters.injected_state import load_research_data_from_file, load_draft_article_from_file
 
 
 def print_separator(title: str = ""):
@@ -32,7 +33,10 @@ def run_pipeline(
     resume_from: Optional[str] = None,
     enable_checkpointing: bool = True,
     unique_execution: bool = False,
-    checkpoint_backend: str = "memory"  # Memory backend (thread-safe, but not persistent)
+    checkpoint_backend: str = "memory",  # Memory backend (thread-safe, but not persistent)
+    use_injected_inputs: bool = False,
+    agent1_file: Optional[str] = None,
+    agent2_file: Optional[str] = None,
 ):
     """
     Executes the complete article writing pipeline with checkpointing support.
@@ -44,6 +48,10 @@ def run_pipeline(
         resume_from: Thread ID to resume from (None = start fresh)
         enable_checkpointing: Enable state persistence (default: True)
         unique_execution: Create unique thread ID even for same topic (default: False)
+        checkpoint_backend: Checkpoint backend ("memory", "sqlite", "postgres")
+        use_injected_inputs: If True, loads Agent1/Agent2 outputs from files and sends them to Agent3
+        agent1_file: JSON file path for Agent1 output (required when use_injected_inputs=True)
+        agent2_file: JSON file path for Agent2 output (required when use_injected_inputs=True)
     
     Returns:
         Final pipeline state
@@ -64,13 +72,37 @@ def run_pipeline(
     print(f"Persona: {persona}")
     print(f"Target Word Count: {word_count}")
     print(f"Checkpointing: {'ENABLED ✓' if enable_checkpointing else 'DISABLED ✗'}")
+    print(f"Injected Inputs: {'ENABLED ✓' if use_injected_inputs else 'DISABLED ✗'}")
+
+    if use_injected_inputs and resume_from:
+        raise ValueError("Cannot use resume_from with injected inputs. Start a fresh injected run.")
+
+    if use_injected_inputs and (not agent1_file or not agent2_file):
+        raise ValueError(
+            "Injected mode requires both agent1_file and agent2_file. "
+            "Example: run_pipeline(..., use_injected_inputs=True, agent1_file='agent1_output.json', agent2_file='agent2_output.json')"
+        )
+
+    preloaded_research_data = None
+    preloaded_draft_article = None
+    if use_injected_inputs:
+        print(f"📥 Loading Agent1 sample from: {agent1_file}")
+        print(f"📥 Loading Agent2 sample from: {agent2_file}")
+        preloaded_research_data = load_research_data_from_file(agent1_file)
+        preloaded_draft_article = load_draft_article_from_file(agent2_file)
+        print("✓ Injected sample outputs loaded")
     
     # ========================================
     # STEP 1: COMPILE GRAPH WITH CHECKPOINTING
     # ========================================
     
     print_separator("Step 1: Compiling Graph")
-    app = compile_article_writer_graph(enable_checkpointing=enable_checkpointing)
+    app = compile_article_writer_graph(
+        enable_checkpointing=enable_checkpointing,
+        checkpoint_backend=checkpoint_backend,
+        preloaded_research_data=preloaded_research_data,
+        preloaded_draft_article=preloaded_draft_article,
+    )
     
     # ========================================
     # STEP 2: DETERMINE THREAD ID
@@ -143,7 +175,8 @@ def run_pipeline(
                 topic=topic,
                 persona=persona,
                 word_count=word_count,
-                target_keyword=topic.split()[0] if topic else None
+                target_keyword=topic.split()[0] if topic else None,
+                disable_revisions=use_injected_inputs
             )
             
             final_state = app.invoke(initial_state, config=config)
@@ -181,9 +214,12 @@ def run_pipeline(
     
     print("\n📈 EVALUATION SCORES:")
     scores = final_state['evaluation']['scores']
-    print(f"  • Factual: {scores['factual']:.2f}")
-    print(f"  • SEO: {scores['seo']:.2f}")
-    print(f"  • Readability: {scores['readability']:.2f}")
+    accuracy_score = scores.get('accuracy', scores.get('factual', 0.0))
+    citation_quality_score = scores.get('citation_quality', scores.get('seo', 0.0))
+    readability_score = scores.get('readability', 0.0)
+    print(f"  • Accuracy: {accuracy_score:.2f}")
+    print(f"  • Citation Quality: {citation_quality_score:.2f}")
+    print(f"  • Readability: {readability_score:.2f}")
     
     print("\n📝 ARTICLE DETAILS:")
     draft = final_state['draft_article']
@@ -279,7 +315,7 @@ def save_results(state, output_file: str = "article_output.json"):
         "article": state["draft_article"],
         "evaluation": state["evaluation"],
         "research_summary": {
-            "total_claims": len(state["research_data"]["claims"]),
+            "total_claims": len(state["research_data"].get("sources", [])),
             "total_sources": len(state["research_data"]["sources"])
         }
     }

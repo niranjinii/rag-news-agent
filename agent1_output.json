@@ -1,0 +1,45 @@
+{
+  "research_data": {
+    "definitions": {
+      "Neural Engine": "A component of the M4 family of chips that enables faster Apple Intelligence models to run on-device.",
+      "Thunderbolt 5": "A technology that enables up to 120Gb/s data transfer speeds on Mac, more than doubling the throughput of Thunderbolt 4."
+    },
+    "sources": [
+      {
+        "id": 1,
+        "subtopic": "M4 Pro vs M4 Max memory bandwidth Apple A16 Bionic unified architecture",
+        "extracted_claim": "M4 Pro supports up to 273GB/s of memory bandwidth, which is a 75 percent increase over M3 Pro.",
+        "raw_chunk": ". M4 Pro supports up to 64GB of fast unified memory and 273GB/s of memory bandwidth, which is a massive 75 percent increase over M3 Pro and 2x the bandwidth of any AI PC chip. 3 This, combined with the faster Neural Engine of the M4 family, means on-device Apple Intelligence models run at blazing speed. M4 Pro also supports Thunderbolt 5 on Mac, delivering up to 120Gb/s data transfer speeds, which more than doubles the throughput of Thunderbolt 4",
+        "url": "https://www.apple.com/newsroom/2024/10/apple-introduces-m4-pro-and-m4-max/"
+      },
+      {
+        "id": 2,
+        "subtopic": "M4 Pro vs M4 Max memory bandwidth Apple A16 Bionic unified architecture",
+        "extracted_claim": "Unified memory bandwidth is increased by up to 75 percent.",
+        "raw_chunk": ". M4 Pro and M4 Max enable Thunderbolt 5 for the Mac for the first time, and unified memory bandwidth is greatly increased \u2014 up to 75 percent. Combined with a Neural Engine that\u2019s up to 2x faster than the previous generation and enhanced machine learning (ML) accelerators in the CPUs, the M4 family of chips brings incredible performance for pro and AI workloads",
+        "url": "https://www.apple.com/newsroom/2024/10/apple-introduces-m4-pro-and-m4-max/"
+      },
+      {
+        "id": 3,
+        "subtopic": "M4 Pro vs M4 Max unified memory bandwidth comparison Apple A15 Bionic",
+        "extracted_claim": "The M4 Max chip has up to 16 CPU cores (12 performance + 4 efficiency cores), up to 40 GPU cores, and 546GB/s memory bandwidth.",
+        "raw_chunk": ". All of the differences between the M4, M4 Pro, and M4 Max chips are listed below: M4 M4 Pro M4 Max Up to 10 CPU cores (4 performance + 6 efficiency cores) Up to 14 CPU cores (10 performance + 4 efficiency cores) Up to 16 CPU cores (12 performance + 4 efficiency cores) Up to 10 GPU cores Up to 20 GPU cores Up to 40 GPU cores 120GB/s memory bandwidth 273GB/s memory bandwidth 546GB/s memory bandwidth Up to 32GB memory Up to 64GB memory Up to 128GB memory Media Engine with one video encode engine",
+        "url": "https://www.macrumors.com/guide/m4-vs-m4-pro-vs-m4-max/"
+      },
+      {
+        "id": 4,
+        "subtopic": "M4 Pro vs M4 Max memory bandwidth Apple A16 Bionic unified architecture",
+        "extracted_claim": "Unified memory bandwidth is increased by up to 75 percent.",
+        "raw_chunk": ". The CPUs across the M4 family feature the world\u2019s fastest CPU core, delivering the industry\u2019s best single-threaded performance, and dramatically faster multithreaded performance. 1 The GPUs build on the breakthrough graphics architecture introduced in the previous generation, with faster cores and a 2x faster ray-tracing engine. M4 Pro and M4 Max enable Thunderbolt 5 for the Mac for the first time, and unified memory bandwidth is greatly increased \u2014 up to 75 percent",
+        "url": "https://www.apple.com/newsroom/2024/10/apple-introduces-m4-pro-and-m4-max/"
+      },
+      {
+        "id": 5,
+        "subtopic": "M4 Pro vs M4 Max memory bandwidth Apple A16 Bionic unified architecture",
+        "extracted_claim": "The M4 Pro GPU supports up to 273GB/s of memory bandwidth, a 75 percent increase over M3 Pro.",
+        "raw_chunk": ". And with the improved hardware-accelerated ray-tracing engine in the M4 family GPU, games like Control look more compelling, and pro 3D renderers can produce stunning imagery in even less time. M4 Pro supports up to 64GB of fast unified memory and 273GB/s of memory bandwidth, which is a massive 75 percent increase over M3 Pro and 2x the bandwidth of any AI PC chip. 3 This, combined with the faster Neural Engine of the M4 family, means on-device Apple Intelligence models run at blazing speed",
+        "url": "https://www.apple.com/newsroom/2024/10/apple-introduces-m4-pro-and-m4-max/"
+      }
+    ]
+  }
+}

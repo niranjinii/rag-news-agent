@@ -3,7 +3,7 @@ State schema for the multi-agent article writing pipeline.
 Uses TypedDict for type safety and clear contracts.
 """
 
-from typing import TypedDict, List, Dict, Optional, Literal
+from typing import TypedDict, List, Dict, Optional, Literal, NotRequired
 
 class VerifiedSource(TypedDict):
     """Self-contained fact package for the Writer Agent"""
@@ -54,9 +54,11 @@ class DraftArticle(TypedDict):
 
 class Scores(TypedDict):
     """Quality scores from Agent3"""
-    factual: float
-    seo: float
+    accuracy: float
+    citation_quality: float
     readability: float
+    factual: NotRequired[float]
+    seo: NotRequired[float]
 
 
 class Evaluation(TypedDict):
@@ -91,3 +93,4 @@ class PipelineState(TypedDict):
     persona: str
     word_count: int
     target_keyword: Optional[str]
+    disable_revisions: NotRequired[bool]

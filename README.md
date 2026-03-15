@@ -108,6 +108,33 @@ final_state = app.invoke(None, config=config)  # Continues from failure point
 python main.py
 ```
 
+### Evaluate Agent3 Using Precomputed Agent1 + Agent2 Files
+
+Use this when you want to keep Agent3 as dummy but feed sample outputs from JSON files:
+
+```bash
+python test_agent3_with_samples.py
+```
+
+Or call `run_pipeline` directly:
+
+```python
+from main import run_pipeline
+
+state = run_pipeline(
+    topic="M4 Pro vs M4 Max",
+    enable_checkpointing=False,
+    use_injected_inputs=True,
+    agent1_file="agent1_output.json",
+    agent2_file="agent2_output.json",
+)
+```
+
+Notes:
+- Pipeline graph remains the same (`research -> writer -> evaluation`).
+- In injected mode, research/writer nodes are fed from files.
+- Revisions are disabled in injected mode, so Agent3 evaluates once.
+
 ---
 
 ## 💾 Checkpointing Deep Dive

@@ -13,7 +13,7 @@ The graph is agent-agnostic: agents can be swapped without modifying pipeline lo
 
 from typing import Literal, Optional
 from langgraph.graph import StateGraph, END
-from state import PipelineState
+from state import PipelineState, ResearchData, DraftArticle
 from agents.research_agent import research_agent_node
 from agents.writer_dummy import writer_agent_node
 from agents.eval_dummy import evaluation_agent_node
@@ -47,6 +47,11 @@ def should_revise(state: PipelineState) -> Literal["writer", "end"]:
     
     evaluation = state.get("evaluation")
     revision_count = state["revision_count"]
+    disable_revisions = state.get("disable_revisions", False)
+
+    if disable_revisions:
+        print("[ROUTER] Revisions disabled for this run, routing to END")
+        return "end"
     
     if not evaluation:
         # Safety: if no evaluation exists, end the pipeline
@@ -82,7 +87,10 @@ def increment_revision_counter(state: PipelineState) -> dict:
 # GRAPH CONSTRUCTION
 # ========================================
 
-def build_article_writer_graph() -> StateGraph:
+def build_article_writer_graph(
+    preloaded_research_data: Optional[ResearchData] = None,
+    preloaded_draft_article: Optional[DraftArticle] = None,
+) -> StateGraph:
     """
     Constructs the LangGraph StateGraph for the article writing pipeline.
     
@@ -132,8 +140,22 @@ def build_article_writer_graph() -> StateGraph:
     # ========================================
     
     # Agent nodes - fully replaceable
-    workflow.add_node("research", research_agent_node)
-    workflow.add_node("writer", writer_agent_node)
+    if preloaded_research_data is not None:
+        def injected_research_node(_: PipelineState) -> dict:
+            print("[RESEARCH AGENT] Using injected Agent1 output")
+            return {"research_data": preloaded_research_data}
+        workflow.add_node("research", injected_research_node)
+    else:
+        workflow.add_node("research", research_agent_node)
+
+    if preloaded_draft_article is not None:
+        def injected_writer_node(_: PipelineState) -> dict:
+            print("[WRITER AGENT] Using injected Agent2 output")
+            return {"draft_article": preloaded_draft_article}
+        workflow.add_node("writer", injected_writer_node)
+    else:
+        workflow.add_node("writer", writer_agent_node)
+
     workflow.add_node("evaluation", evaluation_agent_node)
     
     # Control flow node
@@ -174,7 +196,9 @@ def build_article_writer_graph() -> StateGraph:
 def compile_article_writer_graph(
     enable_checkpointing: bool = True,
     checkpoint_backend: str = "memory",  # Changed default to memory for compatibility
-    checkpoint_db_path: str = "checkpoints.db"
+    checkpoint_db_path: str = "checkpoints.db",
+    preloaded_research_data: Optional[ResearchData] = None,
+    preloaded_draft_article: Optional[DraftArticle] = None,
 ):
     """
     Compiles the graph with integrated checkpointing support.
@@ -190,6 +214,8 @@ def compile_article_writer_graph(
         enable_checkpointing: Enable automatic state persistence (default: True)
         checkpoint_backend: Backend type - "sqlite", "postgres", or "memory" (default: "memory")
         checkpoint_db_path: Path to checkpoint database (default: "checkpoints.db")
+        preloaded_research_data: Optional Agent1 output to inject into research node
+        preloaded_draft_article: Optional Agent2 output to inject into writer node
     
     Returns:
         Compiled LangGraph application with checkpointing enabled
@@ -208,7 +234,10 @@ def compile_article_writer_graph(
         app = compile_article_writer_graph(enable_checkpointing=False)
     """
     
-    workflow = build_article_writer_graph()
+    workflow = build_article_writer_graph(
+        preloaded_research_data=preloaded_research_data,
+        preloaded_draft_article=preloaded_draft_article,
+    )
     
     if enable_checkpointing:
         # Get checkpoint manager and backend
@@ -263,7 +292,8 @@ def create_initial_state(
     topic: str,
     persona: str = "Technical Journalist",
     word_count: int = 800,
-    target_keyword: str = None
+    target_keyword: str = None,
+    disable_revisions: bool = False
 ) -> PipelineState:
     """
     Creates initial pipeline state with user inputs.
@@ -273,6 +303,7 @@ def create_initial_state(
         persona: Writer persona (default: "Technical Journalist")
         word_count: Target word count (default: 800)
         target_keyword: SEO target keyword (optional)
+        disable_revisions: If True, router will not loop back to writer
     
     Returns:
         PipelineState initialized with user inputs
@@ -286,5 +317,6 @@ def create_initial_state(
         revision_count=0,
         persona=persona,
         word_count=word_count,
-        target_keyword=target_keyword
+        target_keyword=target_keyword,
+        disable_revisions=disable_revisions
     )
