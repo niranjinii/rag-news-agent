@@ -7,7 +7,7 @@ def main():
     
     # 1. Create a dummy state that looks exactly like what LangGraph will pass in
     mock_state = PipelineState(
-        topic="DeepSeek R1 reasoning breakthrough capabilities", # Change this to whatever you want
+        topic="Apple iPhone 17", # Change this to whatever you want
         research_data=None,
         draft_article=None,
         evaluation=None,

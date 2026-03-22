@@ -31,39 +31,39 @@ try:
     final_state = app.invoke(initial_state)
     
     print("-" * 70)
-    print("\n✅ SUCCESS! Pipeline completed\n")
+    print("\n SUCCESS! Pipeline completed\n")
     
     # Display results
     print("=" * 70)
     print("RESULTS")
     print("=" * 70)
     
-    print(f"\n📊 Final Status: {final_state['evaluation']['status']}")
-    print(f"🔄 Total Revisions: {final_state['revision_count']}")
+    print(f"\n Final Status: {final_state['evaluation']['status']}")
+    print(f" Total Revisions: {final_state['revision_count']}")
     
-    print(f"\n📈 Scores:")
+    print(f"\n  Scores:")
     scores = final_state['evaluation']['scores']
     print(f"   • Factual: {scores['factual']:.2f}")
     print(f"   • SEO: {scores['seo']:.2f}")
     print(f"   • Readability: {scores['readability']:.2f}")
     
-    print(f"\n📝 Article:")
+    print(f"\n  Article:")
     draft = final_state['draft_article']
     print(f"   • Title: {draft['title']}")
     print(f"   • Length: {len(draft['content_md'])} characters")
     print(f"   • Citations: {len(draft['citations'])}")
     
     print("\n" + "=" * 70)
-    print("✅ CORE SYSTEM WORKS PERFECTLY!")
+    print("  CORE SYSTEM WORKS PERFECTLY!")
     print("=" * 70)
     
-    print("\n💡 NOTE: This ran without checkpointing.")
+    print("\n  NOTE: This ran without checkpointing.")
     print("   To enable checkpoints, use checkpoint_backend='memory'")
     print("   (Memory checkpoints work but don't persist between runs)")
     
 except Exception as e:
     print("-" * 70)
-    print(f"\n❌ ERROR: {e}")
+    print(f"\n  ERROR: {e}")
     print("\nFull error details:")
     import traceback
     traceback.print_exc()
