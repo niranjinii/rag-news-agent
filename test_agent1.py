@@ -7,7 +7,7 @@ def main():
     
     # 1. Create a dummy state that looks exactly like what LangGraph will pass in
     mock_state = PipelineState(
-        topic="AMD Ryzen 9 9950X power consumption", # Change this to whatever you want
+        topic="Battery life of the M3 MacBook Pro", # Change this to whatever you want
         research_data=None,
         draft_article=None,
         evaluation=None,

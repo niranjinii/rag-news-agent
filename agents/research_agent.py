@@ -1,9 +1,10 @@
 import json
 from state import PipelineState, ResearchData
 from tools.web_search import ask_llm, generate_subqueries, google_search
-from tools.scraper import scrape_and_chunk_recursive
+from tools.scraper import scrape_and_chunk
 from tools.vector_store import run_hybrid_search
 from tools.query_router import analyze_and_route_query
+import time
 
 def extract_claim(chunk: str, original_topic: str) -> str:
     """
@@ -16,12 +17,14 @@ def extract_claim(chunk: str, original_topic: str) -> str:
     You must extract the single most highly technical, data-driven factual claim from this text into one concise sentence. 
     Focus ONLY on hard metrics, benchmarks, numbers, or architectural specifications.
     
-    CRITICAL INSTRUCTION: You MUST output your answer in EXACT, valid JSON. Do not include any trailing commas or // comments.
+    CRITICAL ENTITY BINDING: The metric you extract MUST belong exactly to the product requested in the topic ("{original_topic}"). If the text highlights an impressive metric for a predecessor (like M1/M2) or a competitor, DO NOT extract it. 
+    
+    CRITICAL INSTRUCTION: You MUST output your answer in EXACT, valid JSON.
     
     {{
-      "relevance_reasoning": "Step 1: Identify the product in the text. Step 2: Check if it matches the topic. If the topic compares two products (A vs B), the text is relevant if it discusses A OR B. It is NOT relevant if it discusses a different competitor.",
+      "relevance_reasoning": "Step 1: Does this text contain a hard metric specifically for {original_topic}? Step 2: Ensure the metric actually belongs to {original_topic} and not a comparison product.",
       "is_relevant": true,
-      "extracted_claim": "The raw technical fact. Set to 'no factual claim' if is_relevant is false or if there is no hard data."
+      "extracted_claim": "The raw technical fact. Set to 'no factual claim' if is_relevant is false, or if the only hard data belongs to a different product."
     }}
     
     Text: {chunk}
@@ -96,15 +99,33 @@ def research_agent_node(state: PipelineState) -> dict:
     all_chunks = []
     all_metadata = []
     
+    seen_urls = set() # Add this right above the loop!
     for query in subqueries:
         urls = google_search(query)
         for url in urls:
-            # Using the [:50] fix to read past menus
-            chunks = scrape_and_chunk_recursive(url)[:50] 
-            for chunk in chunks:
-                if len(chunk) > 100: 
-                    all_chunks.append(chunk)
-                    all_metadata.append({"url": url, "subtopic": query})
+            if url in seen_urls:
+                continue # Skip if we already scraped it!
+            seen_urls.add(url)
+            # Get the LangChain Document objects from our smart scraper
+            document_chunks = scrape_and_chunk(url)
+            
+            for doc in document_chunks:
+                # 1. Grab the actual text string
+                text_content = doc.page_content
+                
+                # 2. Check the length of the string, not the object!
+                if len(text_content) > 100: 
+                    all_chunks.append(text_content)
+                    
+                    # 3. Merge our URL info with the Markdown Headers!
+                    combined_metadata = {
+                        "url": url, 
+                        "subtopic": query
+                    }
+                    # This adds things like {'Header 2': 'Battery Specs'} so the vector store has it
+                    combined_metadata.update(doc.metadata) 
+                    
+                    all_metadata.append(combined_metadata)
     
     if not all_chunks:
         print("[RESEARCH AGENT]  No data found.")
@@ -123,11 +144,17 @@ def research_agent_node(state: PipelineState) -> dict:
     for match in best_matches:
         raw_chunk = match["chunk"]
         metadata = match["metadata"]
-        
+            
         if raw_chunk in seen_chunks: 
             continue
-            
+                
+        # The Heavy LLM Call
         claim = extract_claim(raw_chunk, topic)
+            
+        # THE FIX: Add the speed bump immediately after!
+        print("[EXTRACTOR] Sleeping for 4 seconds to respect API limits...")
+        time.sleep(4) 
+            
         if "no factual claim" in claim.lower() or "no fact" in claim.lower():
             continue
             

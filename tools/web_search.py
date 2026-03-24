@@ -1,14 +1,9 @@
 import os
 import json
 import requests
-from groq import Groq
-from dotenv import load_dotenv
-
-import os
-import json
-import requests
-from groq import Groq
 from dotenv import load_dotenv, find_dotenv
+from google import genai
+from google.genai import types
 
 # 1. Force Python to hunt down the .env file wherever it is
 env_path = find_dotenv()
@@ -16,24 +11,41 @@ print(f"DEBUG: Found .env file at: {env_path}")
 load_dotenv(env_path)
 
 # 2. Grab the keys
-GROQ_API_KEY = os.getenv("GROQ_API_KEY")
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 SERPER_API_KEY = os.getenv("SERPER_API_KEY")
 
 # 3. Safety check so it doesn't crash blindly
-if not GROQ_API_KEY:
-    raise ValueError("STOP: GROQ_API_KEY is completely empty! Check your .env file.")
+if not GEMINI_API_KEY:
+    raise ValueError("🚨 STOP: GEMINI_API_KEY is missing! Check your .env file.")
+if not SERPER_API_KEY:
+    raise ValueError("🚨 STOP: SERPER_API_KEY is missing! Check your .env file.")
 
-# Initialize the Groq client
-client = Groq(api_key=GROQ_API_KEY)
+# 4. Initialize the modern Gemini Client
+client = genai.Client(api_key=GEMINI_API_KEY)
 
 def ask_llm(prompt, response_format="text"):
-    """Global wrapper for Groq LLM calls."""
-    messages = [{"role": "user", "content": prompt}]
-    kwargs = {"model": "llama-3.1-8b-instant", "messages": messages, "temperature": 0.2}
-    if response_format == "json_object":
-        kwargs["response_format"] = {"type": "json_object"}
-    response = client.chat.completions.create(**kwargs)
-    return response.choices[0].message.content
+    """Global wrapper for Gemini 2.5 Flash LLM calls."""
+    try:
+        # Set up the configuration (low temperature for facts!)
+        config = types.GenerateContentConfig(
+            temperature=0.2,
+        )
+        
+        # If we need JSON, we force Gemini into strict JSON mode
+        if response_format == "json_object":
+            config.response_mime_type = "application/json"
+
+        # Make the actual call to the model
+        response = client.models.generate_content(
+            model='gemini-2.5-flash-lite',
+            contents=prompt,
+            config=config
+        )
+        return response.text
+        
+    except Exception as e:
+        print(f"Gemini API Error: {e}")
+        return "{}" if response_format == "json_object" else ""
 
 def generate_subqueries(topic):
     """Dynamically categorizes the topic to generate relevant technical queries."""
@@ -53,7 +65,8 @@ def generate_subqueries(topic):
     try:
         response = ask_llm(prompt, response_format="json_object")
         return json.loads(response).get("queries", [topic])
-    except:
+    except Exception as e:
+        print(f" Error parsing subqueries: {e}")
         return [topic]
 
 def google_search(query):
@@ -70,9 +83,9 @@ def google_search(query):
         for item in results.get('organic', []):
             if 'link' in item and not any(bad in item['link'] for bad in blacklist):
                 valid_urls.append(item['link'])
-                if len(valid_urls) == 3: # Laptop Saver: Grab top 1 valid URL
+                if len(valid_urls) == 3: 
                     break
         return valid_urls
     except Exception as e:
-        print(f"Serper API error: {e}")
+        print(f" Serper API error: {e}")
         return []
