@@ -39,4 +39,4 @@ def run_hybrid_search(subqueries, all_chunks, all_metadata):
     scored_chunks.sort(key=lambda x: x["score"], reverse=True)
     
     # Return the top 15 absolute best chunks to the LLM
-    return scored_chunks[:15]
+    return scored_chunks[:20]

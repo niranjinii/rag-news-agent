@@ -1,6 +1,6 @@
 import json
 from state import PipelineState, ResearchData
-from tools.web_search import ask_llm, generate_subqueries, google_search
+from tools.web_search import ask_llm, generate_subqueries, google_search, get_definitions_from_gemini
 from tools.scraper import scrape_and_chunk
 from tools.vector_store import run_hybrid_search
 from tools.query_router import analyze_and_route_query
@@ -12,21 +12,26 @@ def extract_claim(chunk: str, original_topic: str) -> str:
     from the wrong products. Returns a standard string for the pipeline.
     """
     prompt = f"""
-    Analyze this text chunk based on the user's research topic: "{original_topic}"
-    
-    You must extract the single most highly technical, data-driven factual claim from this text into one concise sentence. 
-    Focus ONLY on hard metrics, benchmarks, numbers, or architectural specifications.
-    
-    CRITICAL ENTITY BINDING: The metric you extract MUST belong exactly to the product requested in the topic ("{original_topic}"). If the text highlights an impressive metric for a predecessor (like M1/M2) or a competitor, DO NOT extract it. 
-    
-    CRITICAL INSTRUCTION: You MUST output your answer in EXACT, valid JSON.
-    
+    You are a strict, literal Data Extractor.
+    Topic: {original_topic}
+
+    Your goal is to extract the single most important factual claim from this text into one concise sentence. 
+    A "factual claim" includes hard metrics, technical benchmarks, new features, or pricing.
+
+    ### CRITICAL ANTI-HALLUCINATION & FILTERING RULES:
+    1. EXACT MATCH REQUIRED: The fact MUST belong EXACTLY to the product requested: "{original_topic}". For example, if the topic is "M4 Max", and the text only says "M4" or "M4 Pro", DO NOT EXTRACT IT. You must set is_relevant to false.
+    2. NO CODE OR METADATA: If the text chunk looks like raw HTML, JSON, SEO metadata (e.g., "og:title", "href"), or website navigation menus, you MUST reject it entirely.
+    3. Do NOT hallucinate or "glue" the "{original_topic}" name to a feature if the text actually attributes it to a different product.
+    4. If the chunk describes specs for a different product, or only contains fluff/code, set is_relevant to false.
+
+    ### CRITICAL INSTRUCTION: You MUST output your answer in EXACT, valid JSON.
+
     {{
-      "relevance_reasoning": "Step 1: Does this text contain a hard metric specifically for {original_topic}? Step 2: Ensure the metric actually belongs to {original_topic} and not a comparison product.",
+      "relevance_reasoning": "Step 1: Is this real readable text, or just code/JSON? Step 2: Does this contain a concrete fact for EXACTLY {original_topic} (no partial matches)?",
       "is_relevant": true,
-      "extracted_claim": "The raw technical fact. Set to 'no factual claim' if is_relevant is false, or if the only hard data belongs to a different product."
+      "extracted_claim": "The raw factual claim. Set to 'no factual claim' if is_relevant is false."
     }}
-    
+
     Text: {chunk}
     """
     
@@ -150,10 +155,7 @@ def research_agent_node(state: PipelineState) -> dict:
                 
         # The Heavy LLM Call
         claim = extract_claim(raw_chunk, topic)
-            
-        # THE FIX: Add the speed bump immediately after!
-        print("[EXTRACTOR] Sleeping for 4 seconds to respect API limits...")
-        time.sleep(4) 
+             
             
         if "no factual claim" in claim.lower() or "no fact" in claim.lower():
             continue
@@ -174,8 +176,9 @@ def research_agent_node(state: PipelineState) -> dict:
     if not final_sources:
         definitions_dict = {}
     else:
-        combined_text = " ".join([s["raw_chunk"] for s in final_sources])
-        definitions_dict = extract_definitions(combined_text)
+        # THE NEW GEMINI ENRICHMENT STEP
+        print("🧠 Asking Gemini to enrich the payload with dictionary definitions...")
+        definitions_dict = get_definitions_from_gemini(final_sources)
 
     # Package exactly as the state.py expects
     real_research_data: ResearchData = {
