@@ -217,9 +217,13 @@ def run_pipeline(
     accuracy_score = scores.get('accuracy', scores.get('factual', 0.0))
     citation_quality_score = scores.get('citation_quality', scores.get('seo', 0.0))
     readability_score = scores.get('readability', 0.0)
+    coverage_score = scores.get('coverage', 0.0)
+    claim_density_score = scores.get('claim_density', 0.0)
     print(f"  • Accuracy: {accuracy_score:.2f}")
     print(f"  • Citation Quality: {citation_quality_score:.2f}")
     print(f"  • Readability: {readability_score:.2f}")
+    print(f"  • Coverage: {coverage_score:.2f}")
+    print(f"  • Claim Density: {claim_density_score:.2f}")
     
     print("\n📝 ARTICLE DETAILS:")
     draft = final_state['draft_article']

@@ -43,9 +43,11 @@ try:
     
     print(f"\n  Scores:")
     scores = final_state['evaluation']['scores']
-    print(f"   • Factual: {scores['factual']:.2f}")
-    print(f"   • SEO: {scores['seo']:.2f}")
+    print(f"   • Accuracy: {scores['accuracy']:.2f}")
+    print(f"   • Citation Quality: {scores['citation_quality']:.2f}")
     print(f"   • Readability: {scores['readability']:.2f}")
+    print(f"   • Coverage: {scores['coverage']:.2f}")
+    print(f"   • Claim Density: {scores['claim_density']:.2f}")
     
     print(f"\n  Article:")
     draft = final_state['draft_article']

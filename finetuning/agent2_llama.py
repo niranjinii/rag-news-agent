@@ -57,6 +57,8 @@ def extract_citation_ids(text: str) -> Set[int]:
 def sanitize_body(text: str) -> str:
     text = re.sub(r"(?im)^\s*(references|bibliography|sources)\s*:?\s*$", "", text)
     text = re.sub(r"https?://\S+", "", text)
+    text = re.sub(r"(?im)^\s*(?:\[\d+\]\s*){2,}\s*$", "", text)
+    text = re.sub(r"\s*(?:\[\d+\]\s*){4,}$", "", text)
     text = re.sub(r"\n{3,}", "\n\n", text).strip()
     return text
 
@@ -81,6 +83,10 @@ def normalize_tokens(s: str) -> Set[str]:
     stop = {"the", "a", "an", "and", "or", "of", "to", "in", "for", "with", "is", "are", "on", "that", "this", "as", "it", "by"}
     toks = re.findall(r"\b[a-z0-9]+\b", s.lower())
     return {t for t in toks if t not in stop}
+
+
+def numeric_tokens(s: str) -> Set[str]:
+    return set(re.findall(r"\b\d+(?:\.\d+)?\b", s))
 
 
 def jaccard(a: Set[str], b: Set[str]) -> float:
@@ -358,6 +364,62 @@ def deterministic_trim(body: str) -> str:
     return out
 
 
+def build_source_index(sources: List[Dict]) -> Dict[int, Dict[str, Set[str]]]:
+    index: Dict[int, Dict[str, Set[str]]] = {}
+    for src in sources:
+        sid = int(src["id"])
+        src_text = " ".join([
+            str(src.get("subtopic", "")),
+            str(src.get("extracted_claim", "")),
+            str(src.get("raw_chunk", "")),
+        ])
+        index[sid] = {
+            "tokens": normalize_tokens(src_text),
+            "nums": numeric_tokens(src_text),
+        }
+    return index
+
+
+def remap_sentence_citations(body: str, sources: List[Dict]) -> str:
+    """
+    Re-assign each sentence citation to the best matching source by lexical and numeric overlap.
+    """
+    source_index = build_source_index(sources)
+    if not source_index:
+        return body
+
+    remapped_sentences: List[str] = []
+    for sentence in split_sentences(body):
+        cited_ids = re.findall(r"\[(\d+)\]", sentence)
+        if not cited_ids:
+            remapped_sentences.append(sentence)
+            continue
+
+        sentence_wo_cites = re.sub(r"\s*\[\d+\]", "", sentence)
+        sent_tokens = normalize_tokens(sentence_wo_cites)
+        sent_nums = numeric_tokens(sentence_wo_cites)
+
+        best_id = None
+        best_score = -1.0
+        for sid, payload in source_index.items():
+            token_score = jaccard(sent_tokens, payload["tokens"])
+            num_overlap = len(sent_nums & payload["nums"])
+            score = token_score + (0.2 * num_overlap)
+            if score > best_score:
+                best_score = score
+                best_id = sid
+
+        if best_id is not None:
+            cleaned_sentence = re.sub(r"\s*\[\d+\]", "", sentence).strip()
+            remapped_sentences.append(f"{cleaned_sentence} [{best_id}]")
+        else:
+            remapped_sentences.append(sentence)
+
+    out = " ".join(remapped_sentences)
+    out = re.sub(r"(\[\d+\])(\s*\1)+", r"\1", out)
+    return sanitize_body(out)
+
+
 # -------------------------
 # Main
 # -------------------------
@@ -418,6 +480,7 @@ def run_agent2(agent1_input_path: str = "agent1_output.json", agent2_output_path
 
     # 3) Deterministic trim (non-strict)
     final_body = deterministic_trim(final_body)
+    final_body = remap_sentence_citations(final_body, sources)
 
     # final citation safety
     final_missing = [sid for sid in required_ids if sid not in extract_citation_ids(final_body)]
@@ -428,6 +491,7 @@ def run_agent2(agent1_input_path: str = "agent1_output.json", agent2_output_path
     if word_count(final_body) < MIN_WORDS:
         fallback_body = p_body if word_count(p_body) >= MIN_WORDS else best_body
         final_body = clamp_to_max_words(sanitize_body(fallback_body), MAX_WORDS)
+        final_body = remap_sentence_citations(final_body, sources)
         fallback_missing = [sid for sid in required_ids if sid not in extract_citation_ids(final_body)]
         if fallback_missing:
             final_body = inject_missing_citations(final_body, fallback_missing, sources)

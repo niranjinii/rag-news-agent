@@ -408,10 +408,10 @@ class EditorAgent:
 
         if accuracy_score < 95.0:
             decision = "REWRITE_ACCURACY"
-            hard_reason = f"Accuracy below threshold: {accuracy_score:.2f} < 85.00"
+            hard_reason = f"Accuracy below threshold: {accuracy_score:.2f} < 95.00"
         elif citation_score < 90.0:
             decision = "REWRITE_ACCURACY"
-            hard_reason = f"Citation quality below threshold: {citation_score:.2f} < 80.00"
+            hard_reason = f"Citation quality below threshold: {citation_score:.2f} < 90.00"
         else:
             decision = "PUBLISH"
             hard_reason = "All thresholds met"
@@ -447,6 +447,111 @@ class EditorAgent:
     def _word_count(sentence: str) -> int:
         """Count words in a sentence."""
         return len(re.findall(r"\b\w+\b", sentence))
+
+    @staticmethod
+    def _count_syllables(word: str) -> int:
+        """Estimate syllable count for an English word."""
+        cleaned = re.sub(r"[^a-z]", "", (word or "").lower())
+        if not cleaned:
+            return 0
+
+        vowel_groups = re.findall(r"[aeiouy]+", cleaned)
+        syllables = len(vowel_groups)
+
+        if cleaned.endswith("e") and not cleaned.endswith(("le", "ye")) and syllables > 1:
+            syllables -= 1
+
+        return max(1, syllables)
+
+    def _compute_flesch_reading_ease(self, draft: str) -> float:
+        """Compute Flesch Reading Ease (0-100+ where higher is easier)."""
+        sentences = self._split_sentences(draft)
+        words = re.findall(r"\b[a-zA-Z]+\b", draft or "")
+
+        if not sentences or not words:
+            return 0.0
+
+        syllable_total = sum(self._count_syllables(word) for word in words)
+        words_per_sentence = len(words) / len(sentences)
+        syllables_per_word = syllable_total / len(words)
+
+        fre = 206.835 - (1.015 * words_per_sentence) - (84.6 * syllables_per_word)
+        return round(fre, 2)
+
+    @staticmethod
+    def _is_claim_like_sentence(sentence: str) -> bool:
+        """Heuristic detector for factual/claim-like statements."""
+        normalized = (sentence or "").strip().lower()
+        if not normalized:
+            return False
+
+        metric_pattern = r"\b\d+(?:\.\d+)?\s*(?:%|gb/s|ghz|mb|tb|w|kw|tflops|cores?|gb|mb/s|hz)?\b"
+        comparative_pattern = (
+            r"\b(?:up to|increase|decrease|faster|slower|more than|less than|supports|"
+            r"support|includes|include|delivers|enable|enables|improves|improved)\b"
+        )
+
+        has_metric = re.search(metric_pattern, normalized, flags=re.IGNORECASE) is not None
+        has_citation = re.search(r"\[(\d+)\]", normalized) is not None
+        has_comparative = re.search(comparative_pattern, normalized, flags=re.IGNORECASE) is not None
+
+        return has_metric or has_citation or has_comparative
+
+    def _compute_content_metrics(self, draft: str, context: dict) -> dict[str, Any]:
+        """Compute readability, research-claim coverage, and claim-density."""
+        sentences = self._split_sentences(draft)
+        claim_like_sentences = [sentence for sentence in sentences if self._is_claim_like_sentence(sentence)]
+
+        claim_density_ratio = (
+            len(claim_like_sentences) / len(sentences)
+            if sentences
+            else 0.0
+        )
+
+        source_claims = []
+        sources = context.get("sources", []) if isinstance(context, dict) else []
+        for source in sources:
+            if not isinstance(source, dict):
+                continue
+            extracted_claim = str(source.get("extracted_claim", "")).strip()
+            if extracted_claim and extracted_claim.lower() != "no factual claim":
+                source_claims.append(extracted_claim)
+
+        coverage_percentage = 0.0
+        covered_claims = 0
+        if source_claims and claim_like_sentences:
+            source_claim_emb = self.embedding_model.encode(source_claims, convert_to_numpy=True)
+            draft_claim_emb = self.embedding_model.encode(claim_like_sentences, convert_to_numpy=True)
+            similarity_matrix = cosine_similarity(source_claim_emb, draft_claim_emb)
+
+            for claim_similarities in similarity_matrix:
+                if float(np.max(claim_similarities)) >= 0.70:
+                    covered_claims += 1
+
+            coverage_percentage = (covered_claims / len(source_claims)) * 100.0
+
+        readability_fre = self._compute_flesch_reading_ease(draft)
+        readability_clamped = min(max(readability_fre, 0.0), 100.0)
+
+        metrics = {
+            "readability_fre": round(readability_fre, 2),
+            "readability_score": round(readability_clamped / 100.0, 4),
+            "coverage_percentage": round(coverage_percentage, 2),
+            "coverage_score": round(min(max(coverage_percentage, 0.0), 100.0) / 100.0, 4),
+            "claim_density_percentage": round(claim_density_ratio * 100.0, 2),
+            "claim_density_score": round(claim_density_ratio, 4),
+            "claim_like_sentences": len(claim_like_sentences),
+            "total_sentences": len(sentences),
+            "research_claims_total": len(source_claims),
+            "research_claims_covered": covered_claims,
+        }
+
+        self._log(
+            "content_metrics",
+            "Computed readability, coverage, and claim density",
+            **metrics,
+        )
+        return metrics
 
     @staticmethod
     def _extract_specs(text: str) -> dict[str, set[str]]:
@@ -516,19 +621,25 @@ def evaluation_agent_node(state: PipelineState) -> dict:
     try:
         editor = _get_editor_agent()
         result = editor.evaluate(draft=draft_text, context_data=research_payload)
+        content_metrics = editor._compute_content_metrics(draft=draft_text, context=research_payload)
 
         decision = result["decision"]
         status = "APPROVED" if decision == "PUBLISH" else "NEEDS_REVISION"
 
         accuracy_score = round(float(result["accuracy"]["score"]) / 100.0, 4)
         citation_quality_score = round(float(result["citation"]["citation_score"]) / 100.0, 4)
-        readability_score = round((accuracy_score + citation_quality_score) / 2.0, 4)
+        readability_score = content_metrics["readability_score"]
+        coverage_score = content_metrics["coverage_score"]
+        claim_density_score = content_metrics["claim_density_score"]
 
         remarks = [
             f"Decision: {decision}",
             f"Reason: {result['hard_reason']}",
             f"Factual Accuracy: {result['accuracy']['score']:.2f}/100",
             f"Citation Quality: {result['citation']['citation_score']:.2f}/100",
+            f"Readability (Flesch): {content_metrics['readability_fre']:.2f}",
+            f"Coverage: {content_metrics['coverage_percentage']:.2f}%",
+            f"Claim Density: {content_metrics['claim_density_percentage']:.2f}%",
         ]
 
         rewrite_suggestions = [
@@ -544,6 +655,8 @@ def evaluation_agent_node(state: PipelineState) -> dict:
                 "accuracy": accuracy_score,
                 "citation_quality": citation_quality_score,
                 "readability": readability_score,
+                "coverage": coverage_score,
+                "claim_density": claim_density_score,
                 "factual": accuracy_score,
                 "seo": citation_quality_score,
             },
@@ -556,7 +669,9 @@ def evaluation_agent_node(state: PipelineState) -> dict:
         print(
             f"[EVAL AGENT] Scores - Accuracy: {evaluation['scores']['accuracy']}, "
             f"Citation Quality: {evaluation['scores']['citation_quality']}, "
-            f"Readability: {evaluation['scores']['readability']}"
+            f"Readability: {evaluation['scores']['readability']}, "
+            f"Coverage: {evaluation['scores']['coverage']}, "
+            f"Claim Density: {evaluation['scores']['claim_density']}"
         )
 
         debug_payload = {
@@ -578,8 +693,11 @@ def evaluation_agent_node(state: PipelineState) -> dict:
             "scores": {
                 "accuracy": result["accuracy"]["score"],
                 "citation_quality": result["citation"]["citation_score"],
-                "readability": round((result["accuracy"]["score"] + result["citation"]["citation_score"]) / 2.0, 2),
+                "readability": content_metrics["readability_fre"],
+                "coverage": content_metrics["coverage_percentage"],
+                "claim_density": content_metrics["claim_density_percentage"],
             },
+            "content_metrics": content_metrics,
             "accuracy": result.get("accuracy", {}),
             "citation": result.get("citation", {}),
             "feedback": {
@@ -601,6 +719,8 @@ def evaluation_agent_node(state: PipelineState) -> dict:
                 "factual": 0.0,
                 "seo": 0.0,
                 "readability": 0.0,
+                "coverage": 0.0,
+                "claim_density": 0.0,
             },
             "status": "NEEDS_REVISION",
             "remarks": [f"Evaluation failed: {error}"],
@@ -620,6 +740,8 @@ def evaluation_agent_node(state: PipelineState) -> dict:
                 "accuracy": 0.0,
                 "citation_quality": 0.0,
                 "readability": 0.0,
+                "coverage": 0.0,
+                "claim_density": 0.0,
             },
         }
         with open("agent3_debug_output.json", "w", encoding="utf-8") as debug_file:

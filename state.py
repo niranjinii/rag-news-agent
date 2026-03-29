@@ -57,6 +57,8 @@ class Scores(TypedDict):
     accuracy: float
     citation_quality: float
     readability: float
+    coverage: float
+    claim_density: float
     factual: NotRequired[float]
     seo: NotRequired[float]
 

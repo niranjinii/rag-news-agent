@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "generated_at": "2026-03-22T07:52:05.506420Z",
+    "generated_at": "2026-03-29T04:29:20.041224Z",
     "agent": "Agent3 Editor",
     "draft_title": "The M4 Family Chips: Blazing Speed and Efficiency for Pro and AI Workloads",
     "revision_count": 0
@@ -12,12 +12,26 @@
   "decision": {
     "status": "NEEDS_REVISION",
     "decision": "REWRITE_ACCURACY",
-    "reason": "Accuracy below threshold: 59.29 < 85.00"
+    "reason": "Accuracy below threshold: 59.29 < 95.00"
   },
   "scores": {
     "accuracy": 59.29,
     "citation_quality": 42.86,
-    "readability": 51.08
+    "readability": 46.3,
+    "coverage": 60.0,
+    "claim_density": 78.57
+  },
+  "content_metrics": {
+    "readability_fre": 46.3,
+    "readability_score": 0.463,
+    "coverage_percentage": 60.0,
+    "coverage_score": 0.6,
+    "claim_density_percentage": 78.57,
+    "claim_density_score": 0.7857,
+    "claim_like_sentences": 22,
+    "total_sentences": 28,
+    "research_claims_total": 5,
+    "research_claims_covered": 3
   },
   "accuracy": {
     "score": 59.29,
@@ -263,7 +277,7 @@
   },
   "trace": [
     {
-      "timestamp": "2026-03-22T07:52:00.312354Z",
+      "timestamp": "2026-03-29T04:29:06.402406Z",
       "stage": "evaluate",
       "message": "Starting evaluation",
       "data": {
@@ -272,13 +286,13 @@
       }
     },
     {
-      "timestamp": "2026-03-22T07:52:00.312398Z",
+      "timestamp": "2026-03-29T04:29:06.402436Z",
       "stage": "accuracy",
       "message": "Computing 3-layer accuracy",
       "data": {}
     },
     {
-      "timestamp": "2026-03-22T07:52:00.314188Z",
+      "timestamp": "2026-03-29T04:29:06.403524Z",
       "stage": "layer1_regex",
       "message": "Validated citations and specs",
       "data": {
@@ -290,7 +304,7 @@
       }
     },
     {
-      "timestamp": "2026-03-22T07:52:03.270961Z",
+      "timestamp": "2026-03-29T04:29:07.064541Z",
       "stage": "layer2_vectors",
       "message": "Completed vector verification",
       "data": {
@@ -303,7 +317,7 @@
       }
     },
     {
-      "timestamp": "2026-03-22T07:52:04.638768Z",
+      "timestamp": "2026-03-29T04:29:19.640796Z",
       "stage": "layer3_llm",
       "message": "Completed ambiguous claim verification",
       "data": {
@@ -319,7 +333,7 @@
       }
     },
     {
-      "timestamp": "2026-03-22T07:52:04.638790Z",
+      "timestamp": "2026-03-29T04:29:19.640827Z",
       "stage": "accuracy",
       "message": "Computed weighted accuracy",
       "data": {
@@ -330,7 +344,7 @@
       }
     },
     {
-      "timestamp": "2026-03-22T07:52:05.506257Z",
+      "timestamp": "2026-03-29T04:29:19.992641Z",
       "stage": "citation_quality",
       "message": "Completed citation relevance verification",
       "data": {
@@ -342,24 +356,41 @@
       }
     },
     {
-      "timestamp": "2026-03-22T07:52:05.506326Z",
+      "timestamp": "2026-03-29T04:29:19.992711Z",
       "stage": "decision",
       "message": "Applied hard-gate decision",
       "data": {
         "decision": "REWRITE_ACCURACY",
-        "reason": "Accuracy below threshold: 59.29 < 85.00",
+        "reason": "Accuracy below threshold: 59.29 < 95.00",
         "accuracy_score": 59.29,
         "citation_score": 42.86
       }
     },
     {
-      "timestamp": "2026-03-22T07:52:05.506337Z",
+      "timestamp": "2026-03-29T04:29:19.992722Z",
       "stage": "evaluate",
       "message": "Completed evaluation",
       "data": {
         "decision": "REWRITE_ACCURACY",
         "accuracy_score": 59.29,
         "citation_score": 42.86
+      }
+    },
+    {
+      "timestamp": "2026-03-29T04:29:20.041047Z",
+      "stage": "content_metrics",
+      "message": "Computed readability, coverage, and claim density",
+      "data": {
+        "readability_fre": 46.3,
+        "readability_score": 0.463,
+        "coverage_percentage": 60.0,
+        "coverage_score": 0.6,
+        "claim_density_percentage": 78.57,
+        "claim_density_score": 0.7857,
+        "claim_like_sentences": 22,
+        "total_sentences": 28,
+        "research_claims_total": 5,
+        "research_claims_covered": 3
       }
     }
   ]
