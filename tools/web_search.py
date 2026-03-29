@@ -35,7 +35,7 @@ def ask_llm(prompt, response_format="text"):
     try:
         messages = [{"role": "user", "content": prompt}]
         kwargs = {
-            "model": "llama-3.3-70b-versatile",
+            "model": "llama-3.1-8b-instant",
             "messages": messages,
             "temperature": 0.0 # Low temp for strict facts!
         }
@@ -115,29 +115,60 @@ def google_search(query):
         print(f"⚠️ Serper API error: {e}")
         return []
     
-def get_definitions_from_gemini(claims_data):
+def enrich_and_deduplicate(claims_data):
     """
-    The Enrichment Step: Uses Gemini's up-to-date knowledge to define jargon 
-    found in Llama's extracted claims.
+    The Final Editor Step: Uses Gemini as a decision engine to identify unique IDs, 
+    but relies on Python to stitch the original metadata back together.
     """
-    # Combine all the claims into one readable paragraph for Gemini
-    claims_text = "\n".join([item.get("extracted_claim", "") for item in claims_data])
+    if not claims_data:
+        return {"sources": [], "definitions": {}}
+
+    # 1. Strip the heavy payload! Only send the ID and the claim to Gemini.
+    lite_claims = [{"id": item["id"], "claim": item["extracted_claim"]} for item in claims_data]
+    claims_json_str = json.dumps(lite_claims, indent=2)
     
     prompt = f"""
-    You are a Technical Dictionary Editor. Read the following research claims:
+    You are a Senior Technical Editor. Review this list of factual claims:
     
-    {claims_text}
+    {claims_json_str}
     
-    Identify the 2-3 most complex technical terms or jargon (e.g., 'M3 Max', 'SoC', 'Neural Engine').
-    Provide a precise, universally accurate 1-sentence dictionary definition for each using your internal knowledge.
+    ### Task 1: Deduplication
+    Identify which claims are completely unique. If there are duplicates or claims saying the exact same metric, pick the best-worded one and discard the rest.
+    Return a list of the EXACT integer "id"s of the claims that should survive.
     
-    Output ONLY a valid JSON object where keys are the terms and values are the definitions.
-    Example: {{"M3 Max": "A high-performance custom Apple Silicon system-on-a-chip featuring a 40-core GPU."}}
+    ### Task 2: Dictionary
+    Identify 2-3 complex technical terms or jargon from the surviving claims.
+    Write a precise, universally accurate 1-sentence dictionary definition for each.
+    
+    Output ONLY a valid JSON object matching this exact schema:
+    {{
+        "keep_ids": [1, 3],
+        "definitions": {{"Jargon Word": "The definition."}}
+    }}
     """
     try:
-        # Call Gemini in JSON mode!
         raw_response = ask_gemini_gatekeeper(prompt, response_format="json_object")
-        return json.loads(raw_response)
+        editor_logic = json.loads(raw_response)
+        
+        # 2. PYTHON STITCHING: Rebuild the array using the original untouched objects!
+        keep_ids = editor_logic.get("keep_ids", [])
+        
+        # Filter the original array based on Gemini's decisions
+        deduped_sources = [item for item in claims_data if item["id"] in keep_ids]
+        
+        # Safety net: if Gemini hallucinates or empties the list, fallback to all claims
+        if not deduped_sources:
+            deduped_sources = claims_data
+            
+        return {
+            "sources": deduped_sources,
+            "definitions": editor_logic.get("definitions", {})
+        }
+        
     except Exception as e:
-        print(f"⚠️ Gemini Enrichment Error: {e}")
-        return {}
+        print(f"⚠️ Gemini Editor Error: {e}")
+        # Absolute safety net: return the original format untouched
+        return {
+            "sources": claims_data, 
+            "definitions": {}
+        }
