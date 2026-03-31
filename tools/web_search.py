@@ -139,6 +139,9 @@ def enrich_and_deduplicate(claims_data):
     ### Task 2: Dictionary
     Identify 2-3 complex technical terms or jargon from the surviving claims.
     Write a precise, universally accurate 1-sentence dictionary definition for each.
+    Only define highly technical jargon or architecture-specific terms. Do not define general tech terms like
+    'benchmarks' or 'latency' unless they are used in a unique way. Do NOT define common English phrases. And
+    don't give too many definitions and overcrowd the section.
     
     Output ONLY a valid JSON object matching this exact schema:
     {{
