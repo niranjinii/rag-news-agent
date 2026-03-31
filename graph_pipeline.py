@@ -15,7 +15,7 @@ from typing import Literal, Optional
 from langgraph.graph import StateGraph, END
 from state import PipelineState, ResearchData, DraftArticle
 from agents.research_agent import research_agent_node
-from agents.writer_dummy import writer_agent_node
+from agents.writer_agent import writer_agent_node
 from agents.eval_dummy import evaluation_agent_node
 from checkpointing import get_checkpoint_manager
 

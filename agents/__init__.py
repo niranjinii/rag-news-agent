@@ -8,7 +8,7 @@ Agents are fully replaceable - swap implementations without touching graph logic
 """
 
 from .research_agent import research_agent_node
-from .writer_dummy import writer_agent_node
+from .writer_agent import writer_agent_node
 from .eval_dummy import evaluation_agent_node
 
 __all__ = [

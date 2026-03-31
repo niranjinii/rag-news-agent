@@ -1,34 +1,71 @@
 import os
 import re
 import json
+import argparse
+from pathlib import Path
+import requests
 from typing import Dict, List, Tuple, Set
-from groq import Groq
 
 # =========================================================
-# Agent 2 Final (Balanced + Robust to Redundant Agent1 input)
+# Agent 2 Final (JSON-first + Ollama backend, upgraded prompts)
 # Input : agent1_output.json
 # Output: agent2_output.json
 # =========================================================
 
+
+def load_local_env() -> None:
+    script_dir = Path(__file__).resolve().parent
+    candidates = [script_dir / ".env", script_dir.parent / ".env"]
+
+    for env_path in candidates:
+        if not env_path.exists():
+            continue
+
+        for raw_line in env_path.read_text(encoding="utf-8").splitlines():
+            line = raw_line.strip()
+            if not line or line.startswith("#") or "=" not in line:
+                continue
+
+            key, value = line.split("=", 1)
+            key = key.strip()
+            value = value.strip().strip('"').strip("'")
+
+            if key and key not in os.environ:
+                os.environ[key] = value
+        break
+
+
+load_local_env()
+
 # -------------------------
 # Config
 # -------------------------
-GROQ_MODEL = "llama-3.3-70b-versatile"
+OLLAMA_URL = os.getenv("OLLAMA_URL", "http://127.0.0.1:11434")
+OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "llama3.1:8b")
 
-GEN_TEMPERATURE = 0.12
+GEN_TEMPERATURE = 0.08
 GEN_TOP_P = 0.9
-GEN_MAX_TOKENS = 1900
+GEN_MAX_TOKENS = 1400
 
-POLISH_TEMPERATURE = 0.18
+POLISH_TEMPERATURE = 0.08
 POLISH_TOP_P = 0.9
-POLISH_MAX_TOKENS = 1400
+POLISH_MAX_TOKENS = 900
 
 MIN_WORDS = 700
 MAX_WORDS = 1000
 
 TARGET_MIN_GEN_WORDS = 780
-MAX_RETRIES = 5
+MAX_RETRIES = 3
 
+FILLER_PHRASES = [
+    "significant improvements",
+    "major leap",
+    "enhanced performance",
+    "overall",
+    "attractive option",
+    "blazing speed",
+    "game changer",
+]
 
 # -------------------------
 # I/O
@@ -37,11 +74,9 @@ def load_json(path: str) -> Dict:
     with open(path, "r", encoding="utf-8") as f:
         return json.load(f)
 
-
 def save_json(path: str, data: Dict) -> None:
     with open(path, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=2, ensure_ascii=False)
-
 
 # -------------------------
 # Text utils
@@ -49,51 +84,34 @@ def save_json(path: str, data: Dict) -> None:
 def word_count(text: str) -> int:
     return len(re.findall(r"\b\w+\b", text))
 
-
 def extract_citation_ids(text: str) -> Set[int]:
     return {int(x) for x in re.findall(r"\[(\d+)\]", text)}
-
 
 def sanitize_body(text: str) -> str:
     text = re.sub(r"(?im)^\s*(references|bibliography|sources)\s*:?\s*$", "", text)
     text = re.sub(r"https?://\S+", "", text)
-    text = re.sub(r"(?im)^\s*(?:\[\d+\]\s*){2,}\s*$", "", text)
-    text = re.sub(r"\s*(?:\[\d+\]\s*){4,}$", "", text)
+
+    # remove leaked metadata line inside body
+    text = re.sub(r"(?im)^\s*used[_\s]*source[_\s]*ids\s*:\s*\[[^\]]*\]\s*$", "", text)
+
+    # optional: remove ugly citation clusters like [4] [2]
+    text = re.sub(r"(?:\[\d+\]\s*){2,}", "", text)
+
     text = re.sub(r"\n{3,}", "\n\n", text).strip()
     return text
 
-
-def extract_title_body(model_text: str) -> Tuple[str, str]:
-    title_match = re.search(r"(?im)^Title:\s*(.+)\s*$", model_text)
-    body_match = re.search(r"(?is)^.*?Body:\s*(.+)$", model_text)
-
-    title = title_match.group(1).strip() if title_match else "Technical Analysis"
-    body = body_match.group(1).strip() if body_match else model_text.strip()
-
-    body = re.sub(r"(?im)^\s*Title:\s*.+\n?", "", body).strip()
-    body = sanitize_body(body)
-    return title, body
-
-
 def split_sentences(text: str) -> List[str]:
     return [s.strip() for s in re.split(r"(?<=[.!?])\s+", text.strip()) if s.strip()]
-
 
 def normalize_tokens(s: str) -> Set[str]:
     stop = {"the", "a", "an", "and", "or", "of", "to", "in", "for", "with", "is", "are", "on", "that", "this", "as", "it", "by"}
     toks = re.findall(r"\b[a-z0-9]+\b", s.lower())
     return {t for t in toks if t not in stop}
 
-
-def numeric_tokens(s: str) -> Set[str]:
-    return set(re.findall(r"\b\d+(?:\.\d+)?\b", s))
-
-
 def jaccard(a: Set[str], b: Set[str]) -> float:
     if not a and not b:
         return 1.0
     return len(a & b) / max(1, len(a | b))
-
 
 def repeated_ngram_ratio(text: str, n: int = 4) -> float:
     tokens = re.findall(r"\b\w+\b", text.lower())
@@ -101,7 +119,6 @@ def repeated_ngram_ratio(text: str, n: int = 4) -> float:
         return 0.0
     grams = [" ".join(tokens[i:i+n]) for i in range(len(tokens)-n+1)]
     return 1 - (len(set(grams)) / len(grams))
-
 
 def clamp_to_max_words(text: str, max_words: int = MAX_WORDS) -> str:
     if word_count(text) <= max_words:
@@ -114,6 +131,9 @@ def clamp_to_max_words(text: str, max_words: int = MAX_WORDS) -> str:
             break
     return " ".join(out).strip()
 
+def filler_count(text: str) -> int:
+    low = text.lower()
+    return sum(low.count(p) for p in FILLER_PHRASES)
 
 # -------------------------
 # Agent1 parsing + source dedupe helpers
@@ -138,17 +158,12 @@ def parse_agent1(agent1_data: Dict) -> Tuple[str, Dict[str, str], List[Dict]]:
         s["id"] = sid
     return topic, definitions, sources
 
-
 def normalize_claim(text: str) -> str:
     t = re.sub(r"\s+", " ", text.strip().lower())
     t = re.sub(r"[^a-z0-9\s]", "", t)
     return t
 
-
 def build_nonredundant_evidence_view(sources: List[Dict]) -> List[Dict]:
-    """
-    Keep all IDs for citation compliance, but mark redundancy for prompt planning.
-    """
     uniq = []
     seen_claims = []
     for s in sources:
@@ -156,7 +171,6 @@ def build_nonredundant_evidence_view(sources: List[Dict]) -> List[Dict]:
         nclaim = normalize_claim(claim)
         redundant = False
         for c in seen_claims:
-            # simple overlap check
             c_set = set(c.split())
             n_set = set(nclaim.split())
             sim = len(c_set & n_set) / max(1, len(c_set | n_set))
@@ -170,7 +184,6 @@ def build_nonredundant_evidence_view(sources: List[Dict]) -> List[Dict]:
             seen_claims.append(nclaim)
     return uniq
 
-
 # -------------------------
 # Prompt builders
 # -------------------------
@@ -182,17 +195,17 @@ def build_generation_prompt(topic: str, definitions: Dict[str, str], sources: Li
     for s in evidence:
         redundancy_note = " (overlaps with another source; use for corroboration, not repetition)" if s.get("redundant_claim") else ""
         blocks.append(
-            f"[{s['id']}]"
-            f"{redundancy_note}\n"
+            f"[{s['id']}]{redundancy_note}\n"
             f"Subtopic: {s.get('subtopic','')}\n"
             f"Claim: {s.get('extracted_claim','')}\n"
             f"Chunk: {s.get('raw_chunk','')}\n"
         )
 
-    required_ids = ", ".join([f"[{s['id']}]" for s in sources])
+    required_ids = [s["id"] for s in sources]
+    required_ids_str = ", ".join([str(i) for i in required_ids])
 
     return f"""
-You are a technical analyst writing a factual comparison article.
+You are a senior semiconductor analyst. Produce one grounded technical comparison from the provided evidence only.
 
 TOPIC:
 {topic}
@@ -203,83 +216,160 @@ DEFINITIONS:
 EVIDENCE:
 {chr(10).join(blocks)}
 
-STRICT REQUIREMENTS:
-1) Length: {min_words_target}-{MAX_WORDS} words.
-2) Use all source IDs at least once: {required_ids}
-3) Citation format must be [n] inline.
-4) Every major factual claim needs citation(s).
-5) If multiple sources repeat same claim, synthesize once and cite multiple IDs together.
-6) Do NOT invent facts beyond evidence.
-7) No URLs, no bibliography, no references section.
-8) Neutral technical tone only.
-9) Focus on real comparison (M4 Pro vs M4 Max), not repetitive restatement.
+STRICT FACTUAL RULES:
+1) Use ONLY facts present in evidence.
+2) Every material claim must have inline citation(s) in [n] format.
+3) Use all required IDs at least once: [{required_ids_str}]
+4) If claims overlap across sources, synthesize once and cite multiple IDs.
+5) No URLs, no references section, no markdown, no bullet lists.
 
-TARGET STRUCTURE:
-- Short context
-- Memory bandwidth comparison with exact numbers
-- Neural Engine + AI implications
-- Thunderbolt 5 implications
-- CPU/GPU and memory configuration differences
-- Workload-fit comparison (what M4 Pro vs M4 Max is better for)
-- Tight conclusion (no hype/speculation)
+STYLE RULES (MANDATORY):
+- Avoid generic filler like: "significant improvements", "major leap", "enhanced performance", "overall".
+- Prefer concrete language with numbers, comparisons, and implications.
+- Keep tone neutral and technical.
+- No hype or marketing wording.
 
-OUTPUT FORMAT (exact):
-Title: <descriptive title>
-Body:
-<article text with inline citations>
+ANALYSIS RULES (MANDATORY):
+- Explicitly compare M4 Pro vs M4 Max on:
+  (a) memory bandwidth and memory capacity,
+  (b) CPU/GPU core configuration,
+  (c) I/O (Thunderbolt 5),
+  (d) practical workload fit.
+- Include at least 2 short "what this means in practice" statements tied to cited facts.
+- Include one concise "when M4 Pro is sufficient vs when M4 Max is justified" statement.
+
+LENGTH:
+- body must be {min_words_target}-{MAX_WORDS} words.
+
+OUTPUT:
+Return ONLY valid JSON with exactly these keys:
+{{
+  "title": "string",
+  "body": "string",
+  "used_source_ids": [int, int, ...]
+}}
+
+JSON REQUIREMENTS:
+- Escape newlines inside strings as \\n.
+- used_source_ids must contain all required IDs (sorted, unique).
+- Preferred compact JSON:
+{{"title":"...","body":"...","used_source_ids":[...]}}
 """.strip()
-
 
 def build_polish_prompt(title: str, body: str, source_ids: List[int]) -> str:
-    ids = ", ".join([f"[{i}]" for i in source_ids])
+    ids = ", ".join([str(i) for i in source_ids])
     return f"""
-Lightly polish the article below.
+Polish the JSON content for precision and depth while preserving facts/citations.
 
-Goals:
-- Remove repetitive sentences
-- Improve comparison depth and flow
-- Keep factual meaning
-- Keep neutral technical tone
-- Keep citation style [n], and only these IDs: {ids}
-- Keep around 700-1000 words
-- Remove speculative/marketing language
+INPUT JSON:
+{{
+  "title": {json.dumps(title, ensure_ascii=False)},
+  "body": {json.dumps(body, ensure_ascii=False)},
+  "used_source_ids": [{ids}]
+}}
 
-Do NOT add URLs or references section.
+MANDATORY EDIT GOALS:
+1) Remove repetition and generic filler phrasing.
+2) Increase direct comparison density (Pro vs Max).
+3) Keep all numeric facts and citation anchors intact.
+4) Keep only citation IDs from [{ids}].
+5) Keep neutral technical tone; remove hype.
+6) Body length: {MIN_WORDS}-{MAX_WORDS} words.
 
-Return EXACT format:
-Title: <title>
-Body:
-<body>
-
-INPUT TITLE:
-{title}
-
-INPUT BODY:
-{body}
+Return ONLY valid JSON with same 3 keys.
+Escape newlines as \\n inside JSON strings.
 """.strip()
 
+# -------------------------
+# Ollama call
+# -------------------------
+def call_ollama(prompt: str, temperature: float, top_p: float, max_tokens: int) -> str:
+    payload = {
+        "model": OLLAMA_MODEL,
+        "prompt": prompt,
+        "stream": False,
+        "format": "json",
+        "options": {
+            "temperature": temperature,
+            "top_p": top_p,
+            "num_predict": max_tokens
+        }
+    }
+    endpoint = f"{OLLAMA_URL}/api/generate"
+    r = requests.post(endpoint, json=payload, timeout=240)
+    if r.status_code >= 400:
+        details = ""
+        try:
+            details = r.json().get("error", "")
+        except Exception:
+            details = r.text.strip()
+
+        raise RuntimeError(
+            f"Ollama request failed ({r.status_code}) at {endpoint}. "
+            f"Model='{OLLAMA_MODEL}'. Details: {details or 'No error details returned.'}"
+        )
+
+    data = r.json()
+    return data.get("response", "").strip()
 
 # -------------------------
-# Model call
+# Robust JSON parsing
 # -------------------------
-def call_groq(prompt: str, temperature: float, top_p: float, max_tokens: int) -> str:
-    api_key = os.getenv("GROQ_API_KEY")
-    if not api_key:
-        raise EnvironmentError("GROQ_API_KEY not found.")
-    client = Groq(api_key=api_key)
+def parse_json_response(raw_text: str) -> Dict:
+    text = raw_text.strip()
 
-    resp = client.chat.completions.create(
-        model=GROQ_MODEL,
-        messages=[
-            {"role": "system", "content": "You produce grounded technical writing with strict inline citation formatting."},
-            {"role": "user", "content": prompt}
-        ],
-        temperature=temperature,
-        top_p=top_p,
-        max_tokens=max_tokens
-    )
-    return resp.choices[0].message.content.strip()
+    try:
+        return json.loads(text)
+    except Exception:
+        pass
 
+    m = re.search(r"\{[\s\S]*\}", text)
+    if not m:
+        raise ValueError(f"No JSON object found in model output.\nPreview:\n{text[:800]}")
+    obj_text = m.group(0)
+
+    try:
+        return json.loads(obj_text)
+    except Exception:
+        pass
+
+    sanitized = obj_text
+    sanitized = sanitized.replace("\r", "\\r").replace("\t", "\\t")
+    sanitized = re.sub(r",\s*([}\]])", r"\1", sanitized)
+
+    out = []
+    in_string = False
+    escape = False
+    for ch in sanitized:
+        if in_string:
+            if escape:
+                out.append(ch)
+                escape = False
+            else:
+                if ch == "\\":
+                    out.append(ch)
+                    escape = True
+                elif ch == '"':
+                    out.append(ch)
+                    in_string = False
+                elif ch == "\n":
+                    out.append("\\n")
+                else:
+                    out.append(ch)
+        else:
+            out.append(ch)
+            if ch == '"':
+                in_string = True
+    sanitized = "".join(out)
+
+    try:
+        return json.loads(sanitized)
+    except Exception as e:
+        print("---- RAW MODEL OUTPUT (first 1200 chars) ----")
+        print(raw_text[:1200])
+        print("---- EXTRACTED JSON CANDIDATE (first 1200 chars) ----")
+        print(obj_text[:1200])
+        raise ValueError(f"Failed to parse model JSON after sanitization: {e}")
 
 # -------------------------
 # Citation repair (soft)
@@ -324,9 +414,8 @@ def inject_missing_citations(body: str, missing_ids: List[int], sources: List[Di
 
     return sanitize_body(out)
 
-
 # -------------------------
-# Deterministic final trim
+# Deterministic trim
 # -------------------------
 def is_hype_or_speculative(sentence: str) -> bool:
     patterns = [
@@ -334,10 +423,10 @@ def is_hype_or_speculative(sentence: str) -> bool:
         r"\bmajor step forward\b",
         r"\bsignificant impact on the tech industry\b",
         r"\bexciting development\b",
-        r"\bcommitment .* fast and efficient performance\b",
+        r"\bblazing speed\b",
+        r"\battractive option\b",
     ]
     return any(re.search(p, sentence, flags=re.IGNORECASE) for p in patterns)
-
 
 def deterministic_trim(body: str) -> str:
     sents = split_sentences(body)
@@ -363,62 +452,36 @@ def deterministic_trim(body: str) -> str:
     out = clamp_to_max_words(out, MAX_WORDS)
     return out
 
+# -------------------------
+# Output quality checks
+# -------------------------
+def output_quality_gate(title: str, body: str, required_ids: List[int]) -> Tuple[bool, Dict]:
+    wc = word_count(body)
+    rep = repeated_ngram_ratio(body, 4)
+    missing_ids = [sid for sid in required_ids if sid not in extract_citation_ids(body)]
+    filler = filler_count(body)
 
-def build_source_index(sources: List[Dict]) -> Dict[int, Dict[str, Set[str]]]:
-    index: Dict[int, Dict[str, Set[str]]] = {}
-    for src in sources:
-        sid = int(src["id"])
-        src_text = " ".join([
-            str(src.get("subtopic", "")),
-            str(src.get("extracted_claim", "")),
-            str(src.get("raw_chunk", "")),
-        ])
-        index[sid] = {
-            "tokens": normalize_tokens(src_text),
-            "nums": numeric_tokens(src_text),
-        }
-    return index
+    # enforce at least one explicit "M4 Pro" and "M4 Max" mention
+    low = body.lower()
+    has_pro = "m4 pro" in low
+    has_max = "m4 max" in low
 
+    ok = (
+        MIN_WORDS <= wc <= MAX_WORDS and
+        rep < 0.32 and
+        len(missing_ids) == 0 and
+        filler <= 4 and
+        has_pro and has_max
+    )
 
-def remap_sentence_citations(body: str, sources: List[Dict]) -> str:
-    """
-    Re-assign each sentence citation to the best matching source by lexical and numeric overlap.
-    """
-    source_index = build_source_index(sources)
-    if not source_index:
-        return body
-
-    remapped_sentences: List[str] = []
-    for sentence in split_sentences(body):
-        cited_ids = re.findall(r"\[(\d+)\]", sentence)
-        if not cited_ids:
-            remapped_sentences.append(sentence)
-            continue
-
-        sentence_wo_cites = re.sub(r"\s*\[\d+\]", "", sentence)
-        sent_tokens = normalize_tokens(sentence_wo_cites)
-        sent_nums = numeric_tokens(sentence_wo_cites)
-
-        best_id = None
-        best_score = -1.0
-        for sid, payload in source_index.items():
-            token_score = jaccard(sent_tokens, payload["tokens"])
-            num_overlap = len(sent_nums & payload["nums"])
-            score = token_score + (0.2 * num_overlap)
-            if score > best_score:
-                best_score = score
-                best_id = sid
-
-        if best_id is not None:
-            cleaned_sentence = re.sub(r"\s*\[\d+\]", "", sentence).strip()
-            remapped_sentences.append(f"{cleaned_sentence} [{best_id}]")
-        else:
-            remapped_sentences.append(sentence)
-
-    out = " ".join(remapped_sentences)
-    out = re.sub(r"(\[\d+\])(\s*\1)+", r"\1", out)
-    return sanitize_body(out)
-
+    return ok, {
+        "word_count": wc,
+        "repeated_ngram_ratio": rep,
+        "missing_ids": missing_ids,
+        "filler_count": filler,
+        "has_m4_pro": has_pro,
+        "has_m4_max": has_max
+    }
 
 # -------------------------
 # Main
@@ -428,77 +491,88 @@ def run_agent2(agent1_input_path: str = "agent1_output.json", agent2_output_path
     topic, definitions, sources = parse_agent1(agent1_data)
     required_ids = sorted([s["id"] for s in sources])
 
-    # 1) Draft generation with soft retries
-    best_title, best_body, best_score = "Technical Analysis", "", -10**9
+    best_obj = None
+    best_score = -10**9
     min_target = TARGET_MIN_GEN_WORDS
 
+    # 1) Draft generation retries
     for _ in range(MAX_RETRIES):
         prompt = build_generation_prompt(topic, definitions, sources, min_target)
-        raw = call_groq(prompt, GEN_TEMPERATURE, GEN_TOP_P, GEN_MAX_TOKENS)
-        title, body = extract_title_body(raw)
+        raw = call_ollama(prompt, GEN_TEMPERATURE, GEN_TOP_P, GEN_MAX_TOKENS)
+        obj = parse_json_response(raw)
+
+        title = str(obj.get("title", "Technical Analysis")).strip()
+        body = sanitize_body(str(obj.get("body", "")).strip())
+        used = obj.get("used_source_ids", [])
+        if not isinstance(used, list):
+            used = []
 
         missing = [sid for sid in required_ids if sid not in extract_citation_ids(body)]
         if missing:
             body = inject_missing_citations(body, missing, sources)
 
-        wc = word_count(body)
-        rep = repeated_ngram_ratio(body, 4)
-        miss_after = [sid for sid in required_ids if sid not in extract_citation_ids(body)]
+        ok, stats = output_quality_gate(title, body, required_ids)
 
         score = (
-            (1200 if len(miss_after) == 0 else 0)
-            + (900 if MIN_WORDS <= wc <= MAX_WORDS else 0)
-            - abs(850 - wc)
-            - int(rep * 650)
+            (1200 if len(stats["missing_ids"]) == 0 else 0) +
+            (900 if MIN_WORDS <= stats["word_count"] <= MAX_WORDS else 0) -
+            abs(850 - stats["word_count"]) -
+            int(stats["repeated_ngram_ratio"] * 650) -
+            int(stats["filler_count"] * 60) +
+            (80 if stats["has_m4_pro"] else -150) +
+            (80 if stats["has_m4_max"] else -150)
         )
+
+        current_obj = {
+            "title": title,
+            "body": body,
+            "used_source_ids": sorted(set([int(x) for x in used if str(x).isdigit()] + required_ids))
+        }
 
         if score > best_score:
             best_score = score
-            best_title = title
-            best_body = body
+            best_obj = current_obj
 
-        if len(miss_after) == 0 and wc >= MIN_WORDS and rep < 0.30:
+        if ok:
             break
 
-        if wc < MIN_WORDS:
+        if stats["word_count"] < MIN_WORDS:
             min_target = min(MAX_WORDS, min_target + 40)
 
-    # 2) Light polish
-    polish_prompt = build_polish_prompt(best_title, best_body, required_ids)
-    polished_raw = call_groq(polish_prompt, POLISH_TEMPERATURE, POLISH_TOP_P, POLISH_MAX_TOKENS)
-    p_title, p_body = extract_title_body(polished_raw)
+    # 2) Polish pass
+    polish_prompt = build_polish_prompt(best_obj["title"], best_obj["body"], required_ids)
+    polished_raw = call_ollama(polish_prompt, POLISH_TEMPERATURE, POLISH_TOP_P, POLISH_MAX_TOKENS)
+    polished_obj = parse_json_response(polished_raw)
+
+    p_title = str(polished_obj.get("title", best_obj["title"])).strip()
+    p_body = sanitize_body(str(polished_obj.get("body", best_obj["body"])).strip())
 
     p_missing = [sid for sid in required_ids if sid not in extract_citation_ids(p_body)]
     if p_missing:
         p_body = inject_missing_citations(p_body, p_missing, sources)
 
-    # Keep polish only if not too short
     if word_count(p_body) >= 680:
         final_title, final_body = p_title, p_body
     else:
-        final_title, final_body = best_title, best_body
+        final_title, final_body = best_obj["title"], best_obj["body"]
 
-    # 3) Deterministic trim (non-strict)
+    # 3) Deterministic trim + citation safety
     final_body = deterministic_trim(final_body)
-    final_body = remap_sentence_citations(final_body, sources)
 
-    # final citation safety
     final_missing = [sid for sid in required_ids if sid not in extract_citation_ids(final_body)]
     if final_missing:
         final_body = inject_missing_citations(final_body, final_missing, sources)
 
-    # if trim made it too short, fallback to pre-trim polished/draft
     if word_count(final_body) < MIN_WORDS:
-        fallback_body = p_body if word_count(p_body) >= MIN_WORDS else best_body
+        fallback_body = best_obj["body"]
         final_body = clamp_to_max_words(sanitize_body(fallback_body), MAX_WORDS)
-        final_body = remap_sentence_citations(final_body, sources)
         fallback_missing = [sid for sid in required_ids if sid not in extract_citation_ids(final_body)]
         if fallback_missing:
             final_body = inject_missing_citations(final_body, fallback_missing, sources)
 
     used_ids = sorted(list(extract_citation_ids(final_body).intersection(set(required_ids))))
     if len(used_ids) < len(required_ids):
-        used_ids = required_ids[:]  # compatibility safety
+        used_ids = required_ids[:]
 
     output = {
         "agent2_output": {
@@ -511,8 +585,48 @@ def run_agent2(agent1_input_path: str = "agent1_output.json", agent2_output_path
     return output
 
 
+def parse_args() -> argparse.Namespace:
+    script_dir = Path(__file__).resolve().parent
+    default_input = script_dir / "agent1_output.json"
+    default_output = script_dir / "agent2_output.json"
+
+    parser = argparse.ArgumentParser(description="Run Agent 2 draft+polish generation against Ollama")
+    parser.add_argument(
+        "--input",
+        dest="input_path",
+        default=str(default_input),
+        help="Path to agent1_output.json",
+    )
+    parser.add_argument(
+        "--output",
+        dest="output_path",
+        default=str(default_output),
+        help="Path to write agent2_output.json",
+    )
+    parser.add_argument(
+        "--model",
+        dest="model",
+        default=None,
+        help="Optional Ollama model name override (same as OLLAMA_MODEL)",
+    )
+    parser.add_argument(
+        "--url",
+        dest="ollama_url",
+        default=None,
+        help="Optional Ollama URL override (same as OLLAMA_URL)",
+    )
+    return parser.parse_args()
+
+
 if __name__ == "__main__":
-    # pip install groq
-    # export GROQ_API_KEY="your_key"
-    result = run_agent2("agent1_output.json", "agent2_output.json")
-    print("✅ Generated agent2_output.json")
+    args = parse_args()
+
+    if args.model:
+        OLLAMA_MODEL = args.model
+    if args.ollama_url:
+        OLLAMA_URL = args.ollama_url
+
+    result = run_agent2(args.input_path, args.output_path)
+    print(f"✅ Generated {args.output_path}")
+    print(f"Model: {OLLAMA_MODEL}")
+    print(f"Ollama URL: {OLLAMA_URL}")
