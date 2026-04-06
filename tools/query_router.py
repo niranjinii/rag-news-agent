@@ -28,7 +28,9 @@ def analyze_and_route_query(topic):
     {snippets_text}
     
     Step 1 (Existence Check): Does this specific product, architecture, or tech concept actually exist and have officially released data as of {current_date}? 
-    CRITICAL RULE: If the snippets or your internal knowledge describe the product as "rumored," "leaked," "expected," "unreleased," or "speculated," you MUST mark it as REJECT. Do not hallucinate specs for unreleased products.
+    - CRITICAL RULE (The Kill-Switch): If the snippets or your internal knowledge explicitly describe the product as "rumored," "leaked," "expected," "unreleased," or "speculated," you MUST mark it as REJECT. Do not hallucinate specs for unreleased products.
+    - ESCAPE HATCH RULE (Knowledge Cutoff): Technology moves incredibly fast. If the topic sounds like a highly specific new algorithm, deep-tech architecture, or newly published research paper, and you are simply unsure if it exists due to your training cutoff (and the snippets are inconclusive), you MUST NOT reject it. Output "exists": true and let the live search engine verify it.
+    - LEGACY RULE (Version Forgiveness): If the product is a real, older, legacy, or retired version of a technology (e.g., asking about 'Gemini 2.0' when 'Gemini 3.1' exists, or 'Claude 3.5 Opus' when 'Claude 4' exists), DO NOT REJECT IT. Mark as "exists": true. You must allow research on historical benchmarks and superseded models.
     
     Step 2 (Intent Classification): Determine the depth of research required based on the topic. Choose ONE:
     - "DEEP_DIVE": Requires searching for complex benchmarks, feature lists, specs, or reviews for a single product.

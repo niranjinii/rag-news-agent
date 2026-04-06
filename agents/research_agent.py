@@ -72,11 +72,16 @@ def extract_claim(chunk: str, original_topic: str, metadata: dict, detected_inte
        - REJECT: Subjective adjectives ("feels smoother", "writes better"), high-level marketing fluff, or irrelevant benchmark riddles.
        - If the chunk only contains subjective fluff, mark 'is_relevant': false.
 
-    4. FACT BINDING (Tables): Use the 'Document Section Context' to figure out flattened tables.
+    4. FACT BINDING (Tables): If reading a flattened table, strictly count the column headers and align them to the data values. If the data is misaligned or ambiguous, REJECT the chunk.
+       Do not guess which number belongs to which column.
 
     5. STRICT GROUNDING: Every claim you extract MUST be explicitly written in the provided text. Never guess.
 
-    6. NEGATIVE INTENT: If the Target Topic asks for a LACK of something, find an EXPLICIT negative statement.
+    6. NEGATIVE INTENT (Lack of a Feature): If the Target Topic asks if a feature is LACKING or MISSING:
+       - REQUIREMENT: If the text explicitly confirms the feature is removed/missing, extract that fact.
+       - THE BAN: Absence of evidence is NOT evidence of absence. Do not infer a negative just because a feature isn't mentioned.
+       - THE CORRECTION: If the text explicitly proves the feature ACTUALLY EXISTS (disproving the target topic), you MUST set 'is_relevant': true,
+         and extract the claim proving its existence. Prefix the claim with "CORRECTION:" (e.g., "CORRECTION: The product actually includes [Feature X]").
 
     ### CRITICAL INSTRUCTION: You MUST output ONLY a raw JSON object matching this exact schema. 
     Do NOT write any text, markdown, or preamble before the opening brace. All of your step-by-step reasoning MUST happen INSIDE the JSON string values.
@@ -85,10 +90,10 @@ def extract_claim(chunk: str, original_topic: str, metadata: dict, detected_inte
       "step_1_source_type": "Describe tone, URL type, and apply Skepticism Multiplier if score <= 5.",
       "credibility_score": <int between 1 and 10>,
       "step_2_entities_found": "List the exact product names literally written in the text.",
-      "step_3_target_match": "Does the text describe the Target Topic, OR a valid 'Proxy Signal' if the exact topic is closed-source? (Yes/No. Explain.)",
-      "step_4_data_check": "What is the specific Proxy Signal or hard metric found? (If only subjective fluff, write 'None').",
+      "step_3_target_match": "Does the text EXPLICITLY contain the specific feature being asked about? If the user asks if it LACKS a feature, but the text proves it HAS the feature, you MUST write 'CORRECTION TRIGGERED' here.",
+      "step_4_data_check": "What is the specific hard metric found? (If none, write 'None').",
       "is_relevant": true, 
-      "extracted_claim": "The concise factual claim. Set to 'no factual claim' if is_relevant is false.",
+      "extracted_claim": "If step_3 says 'CORRECTION TRIGGERED', write: 'CORRECTION: The product actually has [Feature]'. Otherwise, write the factual claim. If no relevant data, set is_relevant to false.",
       "definitions": {{ "jargon_term": "Define a highly technical architecture or proxy term found in the claim." }}
     }}
 

@@ -142,6 +142,8 @@ def enrich_and_deduplicate(claims_data):
     Only define highly technical jargon or architecture-specific terms. Do not define general tech terms like
     'benchmarks' or 'latency' unless they are used in a unique way. Do NOT define common English phrases. And
     don't give too many definitions and overcrowd the section.
+    ALSO - If the provided search results do not contain enough technical detail to define a term, do not guess based on your training data.
+    Instead, define it based strictly on the provided context or mark it as [Technical Term - Context Limited].
     
     Output ONLY a valid JSON object matching this exact schema:
     {{

@@ -7,7 +7,7 @@ def main():
     
     # 1. Create a dummy state that looks exactly like what LangGraph will pass in
     mock_state = PipelineState(
-        topic="Architectural trade-offs: Why the Groq LPU (SRAM-based) is faster than NVIDIA H100 (HBM-based) but limited by memory capacity.", # Change this to whatever you want
+        topic="Claude 3.5 Opus vs Gemini 2.0 Ultra HumanEval coding benchmark pass@1 score", # Change this to whatever you want
         research_data=None,
         draft_article=None,
         evaluation=None,
