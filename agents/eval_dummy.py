@@ -555,11 +555,36 @@ class EditorAgent:
 
     @staticmethod
     def _extract_specs(text: str) -> dict[str, set[str]]:
-        """Extract generalized numeric specs and metrics."""
-        metrics = {
-            match.strip().lower()
-            for match in re.findall(r"(\d+(?:\.\d+)?\s*(?:GB/s|GHz|MB|TB|W|kW|TFLOPS|cores?|%)?)", text, flags=re.IGNORECASE)
+        """Extract numeric specs while avoiding citation/id noise."""
+        normalized = text or ""
+        normalized = re.sub(r"\[\d+\]", " ", normalized)
+        normalized = re.sub(r"\s+", " ", normalized)
+
+        unit_metrics = {
+            f"{value} {unit.lower()}".strip()
+            for value, unit in re.findall(
+                r"\b(\d+(?:\.\d+)?)\s*(gb/s|ghz|mhz|mb|gb|tb|w|kw|tflops|cores?|%|mah|hz|nits?|mm|cm|ms|fps)\b",
+                normalized,
+                flags=re.IGNORECASE,
+            )
         }
+
+        dimension_metrics = {
+            f"{left}x{right}"
+            for left, right in re.findall(r"\b(\d{3,4})\s*[x×]\s*(\d{3,4})\b", normalized)
+        }
+
+        currency_metrics = {
+            f"{currency}{value}"
+            for currency, value in re.findall(r"([£$€])\s?(\d{2,5}(?:\.\d+)?)", normalized)
+        }
+
+        plain_large_numbers = {
+            value
+            for value in re.findall(r"\b(\d{3,5})\b", normalized)
+        }
+
+        metrics = unit_metrics | dimension_metrics | currency_metrics | plain_large_numbers
         return {"general_metrics": metrics}
 
     @staticmethod
@@ -646,6 +671,35 @@ def evaluation_agent_node(state: PipelineState) -> dict:
             *result.get("accuracy_feedback", []),
             *result.get("citation_feedback", []),
         ]
+
+        concise_suggestions: list[str] = []
+        accuracy_layer1 = result.get("accuracy", {}).get("layer1", {})
+        accuracy_layer2 = result.get("accuracy", {}).get("layer2", {})
+        citation_data = result.get("citation", {})
+
+        if accuracy_layer1.get("hallucinated_specs"):
+            concise_suggestions.append(
+                "Remove or re-cite unsupported numeric metrics not present in research sources."
+            )
+        if accuracy_layer2.get("hallucinations"):
+            concise_suggestions.append(
+                "Rewrite low-support claims to closely match source evidence and keep inline citations."
+            )
+        if accuracy_layer2.get("ambiguous_claims"):
+            concise_suggestions.append(
+                "Clarify ambiguous statements with explicit, source-backed wording."
+            )
+        if citation_data.get("mis_citations"):
+            concise_suggestions.append(
+                "Fix citation mapping so each sentence points to the most relevant source ID."
+            )
+        if content_metrics.get("readability_fre", 100.0) < 45.0:
+            concise_suggestions.append(
+                "Improve readability by shortening long sentences and removing redundant phrases."
+            )
+
+        if concise_suggestions:
+            rewrite_suggestions = concise_suggestions[:5]
 
         if not rewrite_suggestions:
             rewrite_suggestions = ["No blocking issues found"]

@@ -9,6 +9,7 @@ import importlib.util
 import json
 import re
 import tempfile
+import time
 from pathlib import Path
 from typing import Any, Dict, List
 
@@ -122,6 +123,14 @@ def _minimal_fallback_draft(state: PipelineState, error: Exception) -> DraftArti
 	}
 
 
+def _is_agent2_json_parse_error(error: Exception) -> bool:
+	message = str(error)
+	return (
+		"No JSON object found in model output" in message
+		or "Failed to parse model JSON" in message
+	)
+
+
 def writer_agent_node(state: PipelineState) -> dict:
 	"""
 	Real Writer Agent implementation.
@@ -143,7 +152,18 @@ def writer_agent_node(state: PipelineState) -> dict:
 	if revision_count > 0 and state.get("evaluation"):
 		print(f"[WRITER AGENT] REVISION #{revision_count}")
 
+	research_data = state.get("research_data") or {}
+	sources = research_data.get("sources") if isinstance(research_data, dict) else []
+	if not isinstance(sources, list) or not sources:
+		error = ValueError("No sources found in research_data.sources")
+		print("[WRITER AGENT] No research sources available; skipping Agent2 generation")
+		fallback = _minimal_fallback_draft(state, error)
+		print("[WRITER AGENT] Returning fallback draft to keep pipeline alive")
+		print("[WRITER AGENT] ✓ Checkpoint will be saved after this node")
+		return {"draft_article": fallback}
+
 	try:
+		generation_start = time.perf_counter()
 		module = _load_agent2_module()
 		payload = _build_agent1_payload_from_state(state)
 
@@ -176,11 +196,17 @@ def writer_agent_node(state: PipelineState) -> dict:
 			}
 
 			print(f"[WRITER AGENT] Generated article: '{draft_article['title']}'")
+			print(f"[WRITER AGENT] Generation completed in {time.perf_counter() - generation_start:.2f}s")
 			print("[WRITER AGENT] ✓ Checkpoint will be saved after this node")
 
 			return {"draft_article": draft_article}
 
 	except Exception as error:
+		if _is_agent2_json_parse_error(error):
+			print(f"[WRITER AGENT] FATAL JSON PARSE ERROR: {error}")
+			print("[WRITER AGENT] Halting pipeline instead of returning fallback draft")
+			raise RuntimeError(f"Writer output JSON parsing failed: {error}") from error
+
 		print(f"[WRITER AGENT] ERROR: {error}")
 		fallback = _minimal_fallback_draft(state, error)
 		print("[WRITER AGENT] Returning fallback draft to keep pipeline alive")

@@ -351,140 +351,92 @@ def display_article_preview(state):
 
 
 # ========================================
-# MAIN EXECUTION WITH EXAMPLES
+# INTERACTIVE TERMINAL ENTRYPOINT
 # ========================================
 
-if __name__ == "__main__":
-    
-    # ========================================
-    # EXAMPLE 1: Normal Execution with Checkpointing
-    # ========================================
-    
-    print("\n" + "🚀 "*20)
-    print("EXAMPLE 1: Normal Execution with Checkpointing")
-    print("🚀 "*20)
-    
-    topic1 = "NVIDIA B200 GPU release"
-    
-    try:
-        final_state = run_pipeline(
-            topic=topic1,
-            persona="Technical Journalist",
-            word_count=800,
-            enable_checkpointing=True,
-            checkpoint_backend="memory"  # Use memory backend (thread-safe)
-        )
-        
-        # Display and save
+def _prompt_with_default(prompt: str, default: str) -> str:
+    value = input(f"{prompt} [{default}]: ").strip()
+    return value if value else default
+
+
+def _prompt_yes_no(prompt: str, default: bool = True) -> bool:
+    suffix = "Y/n" if default else "y/N"
+    value = input(f"{prompt} ({suffix}): ").strip().lower()
+    if not value:
+        return default
+    return value in {"y", "yes", "1", "true"}
+
+
+def _prompt_int(prompt: str, default: int) -> int:
+    while True:
+        raw_value = input(f"{prompt} [{default}]: ").strip()
+        if not raw_value:
+            return default
+        try:
+            return int(raw_value)
+        except ValueError:
+            print("Please enter a valid integer.")
+
+
+def interactive_main() -> None:
+    print_separator("INTERACTIVE PIPELINE RUNNER")
+    print("Provide the topic/title, then the full pipeline will run:")
+    print("Research Agent → Writer Agent → Evaluator Agent\n")
+
+    topic = ""
+    while not topic:
+        topic = input("Enter search title/topic: ").strip()
+        if not topic:
+            print("Topic cannot be empty.")
+
+    persona = _prompt_with_default("Persona", "Technical Journalist")
+    word_count = _prompt_int("Target word count", 800)
+
+    enable_checkpointing = _prompt_yes_no("Enable checkpointing", True)
+    checkpoint_backend = "memory"
+    if enable_checkpointing:
+        while True:
+            backend_value = _prompt_with_default("Checkpoint backend (memory/sqlite/postgres)", "memory").lower()
+            if backend_value in {"memory", "sqlite", "postgres"}:
+                checkpoint_backend = backend_value
+                break
+            print("Please choose one of: memory, sqlite, postgres.")
+
+    unique_execution = _prompt_yes_no("Use unique execution ID", False)
+
+    resume_from = ""
+    if enable_checkpointing:
+        resume_from = input("Resume from existing thread_id (leave blank for fresh run): ").strip()
+
+    use_injected_inputs = _prompt_yes_no("Use injected Agent1 + Agent2 JSON files", False)
+    agent1_file = None
+    agent2_file = None
+    if use_injected_inputs:
+        agent1_file = _prompt_with_default("Agent1 JSON file", "agent1_output.json")
+        agent2_file = _prompt_with_default("Agent2 JSON file", "agent2_output.json")
+
+    final_state = run_pipeline(
+        topic=topic,
+        persona=persona,
+        word_count=word_count,
+        resume_from=resume_from or None,
+        enable_checkpointing=enable_checkpointing,
+        unique_execution=unique_execution,
+        checkpoint_backend=checkpoint_backend,
+        use_injected_inputs=use_injected_inputs,
+        agent1_file=agent1_file,
+        agent2_file=agent2_file,
+    )
+
+    if _prompt_yes_no("Show article preview", True):
         display_article_preview(final_state)
-        save_results(final_state, "article_output.json")
-        
-        print("✅ Example 1 Complete: Pipeline executed successfully with checkpointing!")
-        
-    except Exception as e:
-        print(f"❌ Example 1 Failed: {e}")
-        print("💡 Note: Progress was saved to checkpoint and can be resumed")
-    
-    # ========================================
-    # EXAMPLE 2: Resume from Checkpoint
-    # ========================================
-    
-    print("\n\n" + "🚀 "*20)
-    print("EXAMPLE 2: Resume from Checkpoint (Simulation)")
-    print("🚀 "*20)
-    
-    # Generate thread ID for the same topic
-    thread_id = generate_thread_id(topic1)
-    
-    print(f"\nAttempting to resume from thread: {thread_id}")
-    print("(If checkpoint exists, will resume; otherwise starts fresh)\n")
-    
-    try:
-        final_state = run_pipeline(
-            topic=topic1,
-            resume_from=thread_id,
-            enable_checkpointing=True,
-            checkpoint_backend="memory"  # Use memory backend
-        )
-        print("✅ Example 2 Complete: Resume functionality demonstrated!")
-        
-    except Exception as e:
-        print(f"Note: {e}")
-    
-    # ========================================
-    # EXAMPLE 3: Unique Execution (No Resume)
-    # ========================================
-    
-    print("\n\n" + "🚀 "*20)
-    print("EXAMPLE 3: Unique Execution (Won't Reuse Checkpoints)")
-    print("🚀 "*20)
-    
-    try:
-        final_state = run_pipeline(
-            topic="Quantum Computing Breakthroughs 2024",
-            persona="Science Communicator",
-            word_count=1200,
-            enable_checkpointing=True,
-            unique_execution=True,  # Creates unique thread ID
-            checkpoint_backend="memory"  # Use memory backend
-        )
-        
-        save_results(final_state, "article_quantum_computing.json")
-        print("✅ Example 3 Complete: Unique execution with new thread ID!")
-        
-    except Exception as e:
-        print(f"❌ Example 3 Failed: {e}")
-    
-    # ========================================
-    # EXAMPLE 4: List All Checkpoints
-    # ========================================
-    
-    print("\n\n" + "🚀 "*20)
-    print("EXAMPLE 4: List All Saved Checkpoints")
-    print("🚀 "*20)
-    
-    list_all_checkpoints()
-    
-    # ========================================
-    # EXAMPLE 5: Cleanup Demo (commented out)
-    # ========================================
-    
-    print("\n\n" + "🚀 "*20)
-    print("EXAMPLE 5: Checkpoint Cleanup (Demo)")
-    print("🚀 "*20)
-    
-    print("\nCleanup function available but not executed in demo.")
-    print("To cleanup old checkpoints, uncomment the line below:")
-    print("# cleanup_old_checkpoints(days=7)")
-    
-    # Uncomment to actually run cleanup:
-    # cleanup_old_checkpoints(days=7)
-    
-    # ========================================
-    # SUMMARY
-    # ========================================
-    
-    print_separator("DEMONSTRATION COMPLETE")
-    
-    print("\n✅ All examples executed successfully!")
-    print("\n📌 KEY FEATURES DEMONSTRATED:")
-    print("  1. ✓ Normal execution with automatic checkpointing")
-    print("  2. ✓ Resume from checkpoint after failure")
-    print("  3. ✓ Unique execution IDs for independent runs")
-    print("  4. ✓ Checkpoint listing and inspection")
-    print("  5. ✓ Cleanup utilities for maintenance")
-    
-    print("\n📚 CHECKPOINTING BENEFITS:")
-    print("  • State saved after each agent execution")
-    print("  • Resume from exact failure point")
-    print("  • No wasted LLM API calls")
-    print("  • Full execution history preserved")
-    print("  • Production-ready reliability")
-    
-    print("\n🔧 NEXT STEPS:")
-    print("  1. Replace agents/research_dummy.py with real RAG Agent1")
-    print("  2. Replace agents/writer_dummy.py with finetuned LLM Agent2")
-    print("  3. Replace agents/eval_dummy.py with real Evaluation Agent3")
-    print("  4. Graph pipeline + checkpointing require ZERO modifications!")
-    
-    print_separator()
+
+    if _prompt_yes_no("Save output JSON", True):
+        output_file = _prompt_with_default("Output filename", "article_output.json")
+        save_results(final_state, output_file)
+
+    print("\nRun complete.")
+
+
+if __name__ == "__main__":
+    interactive_main()

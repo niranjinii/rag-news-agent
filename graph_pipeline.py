@@ -48,9 +48,15 @@ def should_revise(state: PipelineState) -> Literal["writer", "end"]:
     evaluation = state.get("evaluation")
     revision_count = state["revision_count"]
     disable_revisions = state.get("disable_revisions", False)
+    research_data = state.get("research_data") or {}
+    sources = research_data.get("sources") if isinstance(research_data, dict) else []
 
     if disable_revisions:
         print("[ROUTER] Revisions disabled for this run, routing to END")
+        return "end"
+
+    if not isinstance(sources, list) or len(sources) == 0:
+        print("[ROUTER] No research sources available, routing to END")
         return "end"
     
     if not evaluation:
@@ -66,7 +72,7 @@ def should_revise(state: PipelineState) -> Literal["writer", "end"]:
         return "writer"
     else:
         if revision_count >= MAX_REVISIONS:
-            print(f"[ROUTER] Max revisions reached ({MAX_REVISIONS}), forcing approval")
+            print(f"[ROUTER] Max revisions reached ({MAX_REVISIONS}), routing to END")
         else:
             print(f"[ROUTER] Status: {status}")
         print("[ROUTER] → Routing to END")
