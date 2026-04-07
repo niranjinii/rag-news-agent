@@ -17,7 +17,7 @@ def analyze_and_route_query(topic):
     except:
         snippets_text = "No snippets available."
     
-    # 2. THE RUTHLESS PROMPT (Now with Negative Intent routing!)
+    # 2. THE PROMPT
     prompt = f"""
     You are a strict Gatekeeper and Routing Agent for a tech newsroom.
     Analyze this user research topic: "{topic}"
