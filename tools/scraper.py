@@ -17,7 +17,7 @@ def scrape_pdf(url):
             # We join pages with a form feed character
             full_text = chr(12).join([page.get_text() for page in doc])
             
-            # Returning as a LangChain Document so it slides right into your loop
+            # Returning as a LangChain Document
             return [Document(
                 page_content=full_text, 
                 metadata={
@@ -32,7 +32,7 @@ def scrape_pdf(url):
         return []
 
 def scrape_and_chunk(url):
-    print(f"🕵️‍♂️ Fetching via Jina, Extracting via Trafilatura: {url}")
+    print(f" Fetching via Jina, Extracting via Trafilatura: {url}")
     
     jina_url = f"https://r.jina.ai/{url}"
     
@@ -46,8 +46,7 @@ def scrape_and_chunk(url):
         response.raise_for_status() 
         raw_html = response.text
         
-        # 2. THE SCALPEL: Trafilatura cleans the HTML and outputs pure Markdown!
-        # output_format="markdown" is the modern Trafilatura way to do this
+        # 2. THE SCALPEL: Trafilatura cleans the HTML and outputs pure Markdown
         markdown_content = trafilatura.extract(raw_html, output_format="markdown")
         
         if not markdown_content or len(markdown_content) < 50:

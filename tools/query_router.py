@@ -10,7 +10,7 @@ def analyze_and_route_query(topic):
     current_date = datetime.datetime.now().strftime("%B %Y")
     
     # 1. THE PRE-SEARCH: Grab the top 3 Google snippets to reality-check the LLM
-    print(f"🕵️‍♂️ Running Pre-Search sanity check for: {topic}...")
+    print(f"Running Pre-Search sanity check for: {topic}...")
     try:
         quick_snippets = google_search(f"{topic} official release OR announcement")[:3]
         snippets_text = "\n".join(quick_snippets)

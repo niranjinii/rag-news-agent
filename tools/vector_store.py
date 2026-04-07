@@ -2,7 +2,7 @@ import chromadb
 from rank_bm25 import BM25Okapi
 from sentence_transformers import CrossEncoder
 
-# Load the model globally so it stays warm in memory
+# Load the model globally so it stays in memory
 print("Loading Cross-Encoder model...")
 reranker_model = CrossEncoder('cross-encoder/ms-marco-MiniLM-L-6-v2')
 
@@ -24,7 +24,7 @@ def rerank_chunks(original_topic: str, chunks_data: list, top_k: int = 15) -> li
     for i, item in enumerate(chunks_data):
         item["cross_encoder_score"] = float(scores[i])
         
-    # Sort them highest to lowest based on the NEW semantic score
+    # Sort them highest to lowest based on the semantic score
     reranked = sorted(chunks_data, key=lambda x: x["cross_encoder_score"], reverse=True)
     
     # Slice off the absolute best ones to feed to Llama
@@ -34,7 +34,7 @@ def run_hybrid_search(subqueries, all_chunks, all_metadata):
     """
     Ranks chunks based on keyword matching AND Markdown Header metadata.
     """
-    print(f"🧮 Running Hybrid Search on {len(all_chunks)} chunks...")
+    print(f" Running Hybrid Search on {len(all_chunks)} chunks...")
     scored_chunks = []
     
     # Flatten our subqueries into one massive keyword list
@@ -49,7 +49,7 @@ def run_hybrid_search(subqueries, all_chunks, all_metadata):
             if word in chunk_lower:
                 score += 1
                 
-        # 2. THE METADATA BOOST (The Rank 2 Fix!)
+        # 2. THE METADATA BOOST
         # If the target keywords are actually in the Markdown Header, give it a massive multiplier
         headers_text = str(metadata).lower()
         for word in target_keywords:

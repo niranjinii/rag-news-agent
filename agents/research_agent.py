@@ -100,7 +100,7 @@ def extract_claim(chunk: str, original_topic: str, metadata: dict, detected_inte
     Text: {chunk}
     """
     
-    # Call your existing helper function
+    # Call the helper function
     raw_response = ask_llm(prompt, response_format="json_object")
     
     cleaned_text = clean_llm_json(raw_response)
@@ -136,7 +136,7 @@ def extract_claim(chunk: str, original_topic: str, metadata: dict, detected_inte
         return data.get("extracted_claim", "no factual claim").strip().replace('"', '')
         
     except json.JSONDecodeError as e:
-        # Safety net: If the LLM glitches, safely drop the claim without crashing Python!
+        # Safety net: If the LLM glitches, safely drop the claim without crashing
         print(f"❌ JSON FAIL | Topic: {original_topic[:20]}... | Error: {str(e)}")
         print(f"RAW FAILING TEXT: {raw_response[:150]}...") 
         return "no factual claim"
@@ -151,9 +151,8 @@ def research_agent_node(state: PipelineState) -> dict:
     print(f"\n[RESEARCH AGENT] Starting live pipeline for topic: {topic}")
     
     # ==========================================
-    # 1. THE GATEKEEPER (New Routing Logic)
+    # 1. THE GATEKEEPER
     # ==========================================
-    # ... (inside research_agent_node) ...
     print(f"[RESEARCH AGENT] Analyzing intent and verifying existence...")
     routing_plan = analyze_and_route_query(topic)
     
@@ -166,9 +165,6 @@ def research_agent_node(state: PipelineState) -> dict:
     subqueries = routing_plan.get("search_queries", [topic])
     print(f"[RESEARCH AGENT] Intent: {routing_plan.get('intent')}. Using optimized queries: {subqueries}")
 
-    # ==========================================
-    # 📍 NEW SNOB FILTER LOGIC GOES HERE 📍
-    # ==========================================
     detected_intent = routing_plan.get("intent", "DEEP_DIVE")
     detected_domain = routing_plan.get("subject_domain", "GENERAL_OVERVIEW")
 
@@ -213,7 +209,7 @@ def research_agent_node(state: PipelineState) -> dict:
                 print(f"📄 PDF Detected (Potential Whitepaper): {url}")
                 document_chunks = scrape_pdf(url) # Our new PyMuPDF tool
             else:
-                # Your original Trafilatura scraper
+                # Trafilatura scraper
                 document_chunks = scrape_and_chunk(url) 
 
             # 📍 STEP 2: PROCESS AND MERGE
@@ -231,7 +227,7 @@ def research_agent_node(state: PipelineState) -> dict:
                         "subtopic": query,
                         "source_type": "pdf_whitepaper" if is_pdf else "web_article"
                     }
-                    # Keep your original header extraction logic intact
+                    # Header extraction
                     combined_metadata.update(doc.metadata)
                     
                     all_metadata.append(combined_metadata)
@@ -243,10 +239,10 @@ def research_agent_node(state: PipelineState) -> dict:
             "sources": []
         }}
 
-    # 1. Cast the wide net (e.g., grab the top 40 loose matches)
+    # 1. Cast the wide net
     best_matches = run_hybrid_search(subqueries, all_chunks, all_metadata)
     
-    # 🛑 THE FILTER: Re-rank the chunks and strictly keep the top 15!
+    # THE FILTER: Re-rank the chunks and strictly keep the top 15
     print(f"🎯 Cross-Encoder re-ranking {len(best_matches)} chunks to find the absolute best 15...")
     elite_matches = rerank_chunks(topic, best_matches, top_k=15)
 
@@ -254,7 +250,7 @@ def research_agent_node(state: PipelineState) -> dict:
     source_id_counter = 1
     seen_chunks = set()
     
-    # 2. Only feed the 'elite_matches' to Llama so you don't blow up your rate limits
+    # 2. Only feed the 'elite_matches' to Llama
     for match in elite_matches:
         raw_chunk = match["chunk"]
         metadata = match["metadata"]
@@ -264,7 +260,6 @@ def research_agent_node(state: PipelineState) -> dict:
             continue
         seen_chunks.add(raw_chunk)
                 
-        # The Heavy LLM Call is now protected!
         claim = extract_claim(
             chunk=raw_chunk, 
             original_topic=topic, 
@@ -273,8 +268,7 @@ def research_agent_node(state: PipelineState) -> dict:
             current_guidelines=current_guidelines 
         )
               
-        # 🛑 THE UPGRADED NULL HAMMER 🛑
-        # Catch nulls, empties, AND your old "no fact" strings all at once
+        # Catch nulls, empties, and "no fact" strings all at once
         if not claim or str(claim).strip().lower() == "null" or "no factual claim" in claim.lower() or "no fact" in claim.lower():
             print("🗑️ Dropped: LLM determined the chunk does not contain a valid claim.")
             continue
@@ -289,7 +283,7 @@ def research_agent_node(state: PipelineState) -> dict:
         
         source_id_counter += 1
 
-    # Only run the definition extractor if we actually found facts!
+    # Only run the definition extractor if we actually found facts
     if not final_sources:
         editor_output = {}
     else:
@@ -306,7 +300,7 @@ def research_agent_node(state: PipelineState) -> dict:
     # ==========================================
     final_sources_list = editor_output.get("sources", editor_output.get("unique_claims", editor_output.get("claims", [])))
 
-    # CLEANUP: Renumber the IDs sequentially after deduplication so there are no gaps!
+    # CLEANUP: Renumber the IDs sequentially after deduplication so there are no gaps
     for index, source in enumerate(final_sources_list):
         source["id"] = index + 1
 

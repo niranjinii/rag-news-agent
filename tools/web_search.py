@@ -6,17 +6,14 @@ from google import genai
 from google.genai import types
 from groq import Groq
 
-# 1. Force Python to hunt down the .env file wherever it is
 env_path = find_dotenv()
 print(f"DEBUG: Found .env file at: {env_path}")
 load_dotenv(env_path)
 
-# 2. Grab the keys
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 SERPER_API_KEY = os.getenv("SERPER_API_KEY")
 
-# 3. Safety checks
 if not GEMINI_API_KEY:
     raise ValueError("🚨 STOP: GEMINI_API_KEY is missing! Check your .env file.")
 if not GROQ_API_KEY:
@@ -24,7 +21,7 @@ if not GROQ_API_KEY:
 if not SERPER_API_KEY:
     raise ValueError("🚨 STOP: SERPER_API_KEY is missing! Check your .env file.")
 
-# 4. Initialize both clients
+# Initialize both clients
 gemini_client = genai.Client(api_key=GEMINI_API_KEY)
 groq_client = Groq(api_key=GROQ_API_KEY)
 
@@ -37,7 +34,7 @@ def ask_llm(prompt, response_format="text"):
         kwargs = {
             "model": "llama-3.1-8b-instant",
             "messages": messages,
-            "temperature": 0.0 # Low temp for strict facts!
+            "temperature": 0.0 # Low temp for strict facts
         }
         
         # Force strict JSON mode if requested
@@ -86,7 +83,6 @@ def generate_subqueries(topic):
     Output ONLY a JSON object: {{"queries": ["q1", "q2", "q3"]}}
     """
     try:
-        # Uses Llama 70B by default!
         response = ask_llm(prompt, response_format="json_object")
         return json.loads(response).get("queries", [topic])
     except Exception as e:
@@ -123,7 +119,7 @@ def enrich_and_deduplicate(claims_data):
     if not claims_data:
         return {"sources": [], "definitions": {}}
 
-    # 1. Strip the heavy payload! Only send the ID and the claim to Gemini.
+    # Only send the ID and the claim to Gemini.
     lite_claims = [{"id": item["id"], "claim": item["extracted_claim"]} for item in claims_data]
     claims_json_str = json.dumps(lite_claims, indent=2)
     
@@ -155,7 +151,7 @@ def enrich_and_deduplicate(claims_data):
         raw_response = ask_gemini_gatekeeper(prompt, response_format="json_object")
         editor_logic = json.loads(raw_response)
         
-        # 2. PYTHON STITCHING: Rebuild the array using the original untouched objects!
+        # PYTHON STITCHING: Rebuild the array using the original untouched objects
         keep_ids = editor_logic.get("keep_ids", [])
         
         # Filter the original array based on Gemini's decisions
