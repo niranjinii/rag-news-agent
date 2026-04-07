@@ -32,7 +32,7 @@ def ask_llm(prompt, response_format="text"):
     try:
         messages = [{"role": "user", "content": prompt}]
         kwargs = {
-            "model": "llama-3.1-8b-instant",
+            "model": "llama-3.3-70b-versatile",
             "messages": messages,
             "temperature": 0.0 # Low temp for strict facts
         }
