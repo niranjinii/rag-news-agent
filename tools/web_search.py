@@ -111,10 +111,11 @@ def google_search(query):
         print(f"⚠️ Serper API error: {e}")
         return []
     
-def enrich_and_deduplicate(claims_data):
+def enrich_and_deduplicate(claims_data, kg_result=None):
     """
     The Final Editor Step: Uses Gemini as a decision engine to identify unique IDs, 
     but relies on Python to stitch the original metadata back together.
+    Gracefully handles optional Knowledge Graph (kg_result) data.
     """
     if not claims_data:
         return {"sources": [], "definitions": {}}
@@ -123,11 +124,30 @@ def enrich_and_deduplicate(claims_data):
     lite_claims = [{"id": item["id"], "claim": item["extracted_claim"]} for item in claims_data]
     claims_json_str = json.dumps(lite_claims, indent=2)
     
-    prompt = f"""
+    # --- 1. DYNAMIC PROMPT CONSTRUCTION ---
+    # We build the prompt in pieces so we can drop the KG part if the API failed.
+    
+    prompt_intro = f"""
     You are a Senior Technical Editor. Review this list of factual claims:
     
     {claims_json_str}
+    """
     
+    kg_enrichment_block = ""
+    # If the KG result exists AND it isn't an API timeout/error, inject the rule
+    if kg_result and kg_result.get("kg_status") != "API_TIMEOUT_OR_ERROR":
+        kg_enrichment_block = f"""
+    ---
+    🌐 KNOWLEDGE GRAPH ENRICHMENT DATA:
+    The external Wikidata API evaluated the main subject and returned this status: {kg_result.get('kg_status', 'Unknown')}
+    
+    CRITICAL NEW-RELEASE RULE: 
+    - If the Knowledge Graph status says 'Not found in global graph', YOU MUST NOT DROP VALID FACTS just because they seem too new or unverified by the graph. 
+    - Technology moves faster than encyclopedias. Treat a 'Not found' status as evidence of a Day-One breaking news announcement. 
+    ---
+    """
+
+    prompt_tasks = """
     ### Task 1: Deduplication
     Identify which claims are completely unique. If there are duplicates or claims saying the exact same metric, pick the best-worded one and discard the rest.
     Return a list of the EXACT integer "id"s of the claims that should survive.
@@ -142,11 +162,16 @@ def enrich_and_deduplicate(claims_data):
     Instead, define it based strictly on the provided context or mark it as [Technical Term - Context Limited].
     
     Output ONLY a valid JSON object matching this exact schema:
-    {{
+    {
         "keep_ids": [1, 3],
-        "definitions": {{"Jargon Word": "The definition."}}
-    }}
+        "definitions": {"Jargon Word": "The definition."}
+    }
     """
+    
+    # Stitch the prompt together
+    prompt = prompt_intro + kg_enrichment_block + prompt_tasks
+
+    # --- 2. EXECUTE GEMINI CALL ---
     try:
         raw_response = ask_gemini_gatekeeper(prompt, response_format="json_object")
         editor_logic = json.loads(raw_response)

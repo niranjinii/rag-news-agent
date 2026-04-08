@@ -1,6 +1,7 @@
 import json
 from state import PipelineState, ResearchData
 from tools.web_search import ask_llm, generate_subqueries, google_search, enrich_and_deduplicate
+from tools.knowledge_graph import verify_entity_with_wikidata # <-- NEW: Import your API tool
 from tools.scraper import scrape_and_chunk, scrape_pdf
 from tools.vector_store import run_hybrid_search, rerank_chunks
 from tools.query_router import analyze_and_route_query
@@ -145,7 +146,7 @@ def extract_claim(chunk: str, original_topic: str, metadata: dict, detected_inte
 def research_agent_node(state: PipelineState) -> dict:
     """
     Research Agent - pulls live data using modular tools and formats it.
-    Now equipped with a semantic gatekeeper to prevent hallucinations!
+    Now equipped with a semantic gatekeeper and Knowledge Graph verification!
     """
     topic = state["topic"]
     print(f"\n[RESEARCH AGENT] Starting live pipeline for topic: {topic}")
@@ -156,6 +157,14 @@ def research_agent_node(state: PipelineState) -> dict:
     print(f"[RESEARCH AGENT] Analyzing intent and verifying existence...")
     routing_plan = analyze_and_route_query(topic)
     
+    # --- NEW: Print the audit trail quote so you can flex the evidence! ---
+    extracted_quote = routing_plan.get("exact_quote_from_snippet", "MISSING")
+    reasoning = routing_plan.get("existence_reasoning", "MISSING")
+    
+    print(f"🔒 [GATEKEEPER AUDIT] Evidence: '{extracted_quote}'")
+    print(f"🧠 [GATEKEEPER REASONING]: '{reasoning}'")
+    # ----------------------------------------------------------------------
+    
     # Halt immediately if the product doesn't exist
     if not routing_plan.get("exists", True):
         reasoning = routing_plan.get("existence_reasoning", "No reason provided")
@@ -163,7 +172,7 @@ def research_agent_node(state: PipelineState) -> dict:
         return {"research_data": {"definitions": {}, "sources": []}}
         
     subqueries = routing_plan.get("search_queries", [topic])
-    print(f"[RESEARCH AGENT] Intent: {routing_plan.get('intent')}. Using optimized queries: {subqueries}")
+    print(f"[RESEARCH AGENT] Intent: {routing_plan.get('intent')} | Domain: {routing_plan.get('subject_domain')}. Using optimized queries: {subqueries}")
 
     detected_intent = routing_plan.get("intent", "DEEP_DIVE")
     detected_domain = routing_plan.get("subject_domain", "GENERAL_OVERVIEW")
@@ -259,9 +268,12 @@ def research_agent_node(state: PipelineState) -> dict:
         if raw_chunk in seen_chunks:
             continue
         seen_chunks.add(raw_chunk)
+        
+        # Truncate to ~10k tokens so Groq never chokes on a PDF
+        safe_chunk = raw_chunk[:40000] 
                 
         claim = extract_claim(
-            chunk=raw_chunk, 
+            chunk=safe_chunk, # 📍 UPDATE THIS: Pass safe_chunk instead of raw_chunk
             original_topic=topic, 
             metadata=metadata,
             detected_intent=detected_intent,      
@@ -288,12 +300,18 @@ def research_agent_node(state: PipelineState) -> dict:
         editor_output = {}
     else:
         # ==========================================
+        # NEW: THE KNOWLEDGE GRAPH CHECK
+        # ==========================================
+        # We ping Wikidata using the main topic before passing it to the Editor
+        kg_result = verify_entity_with_wikidata(topic)
+
+        # ==========================================
         # THE ENRICHMENT & DEDUPLICATION STEP
         # ==========================================
         print("🧠 Asking Gemini to deduplicate claims and write definitions...")
     
-        # Pass the list of Llama's extracted sources
-        editor_output = enrich_and_deduplicate(final_sources)
+        # NEW: Pass BOTH the extracted sources and the KG result
+        editor_output = enrich_and_deduplicate(final_sources, kg_result)
 
     # ==========================================
     # ASSEMBLE FINAL PAYLOAD

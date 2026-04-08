@@ -4,8 +4,8 @@ from tools.web_search import ask_gemini_gatekeeper, google_search
 
 def analyze_and_route_query(topic):
     """
-    Acts as the Gatekeeper. Verifies existence (with time awareness and live snippets) 
-    AND determines the research intent, dynamically rewriting negative queries.
+    Acts as the Gatekeeper. Verifies existence using evidence-based extraction 
+    to bypass LLM memory conflicts, AND determines the research intent.
     """
     current_date = datetime.datetime.now().strftime("%B %Y")
     
@@ -27,10 +27,14 @@ def analyze_and_route_query(topic):
     Recent Web Snippets for Reality Check:
     {snippets_text}
     
-    Step 1 (Existence Check): Does this specific product, architecture, or tech concept actually exist and have officially released data as of {current_date}? 
-    - CRITICAL RULE (The Kill-Switch): If the snippets or your internal knowledge explicitly describe the product as "rumored," "leaked," "expected," "unreleased," or "speculated," you MUST mark it as REJECT. Do not hallucinate specs for unreleased products.
-    - ESCAPE HATCH RULE (Knowledge Cutoff): Technology moves incredibly fast. If the topic sounds like a highly specific new algorithm, deep-tech architecture, or newly published research paper, and you are simply unsure if it exists due to your training cutoff (and the snippets are inconclusive), you MUST NOT reject it. Output "exists": true and let the live search engine verify it.
-    - LEGACY RULE (Version Forgiveness): If the product is a real, older, legacy, or retired version of a technology (e.g., asking about 'Gemini 2.0' when 'Gemini 3.1' exists, or 'Claude 3.5 Opus' when 'Claude 4' exists), DO NOT REJECT IT. Mark as "exists": true. You must allow research on historical benchmarks and superseded models.
+    Step 1 (Existence Check): Does this specific product, architecture, or tech concept actually exist and have officially released data? 
+    - CRITICAL RULE (Ignore Internal Memory): You MUST base your release status decision STRICTLY on the 'Recent Web Snippets' provided above. Do not use your internal training data to second-guess the live snippets. If the snippets say it exists, it exists.
+    - EXTRACT EVIDENCE: You must extract the exact quote from the snippets that justifies your decision to approve or reject. 
+    - EVIDENCE HIERARCHY & DATE AWARENESS: Distinguish between "High-Weight" evidence (Retail listings, 'Full Reviews', 'Official Specs', 'Launch Coverage' from 2026) and "Low-Weight" evidence ('Leaks', 'Rumors', 'Upcoming' mentions from 2025). 
+    - THE OVERRIDE RULE: If snippets are mixed (e.g., an old 2025 snippet says "Upcoming" but a newer 2026 snippet shows a "Review" or "Buy Now" link), the High-Weight, newer evidence MUST override the older labels. 
+    - THE KILL-SWITCH: Mark as REJECT ("exists": false) ONLY if the snippets are dominated by "rumored," "leaked," "expected," "unreleased," or "speculated" tags AND you cannot find a single piece of High-Weight evidence confirming it is currently available as of {current_date}.
+    - ESCAPE HATCH RULE (Knowledge Cutoff): ONLY apply this if the topic is a highly specific software algorithm, research paper, or deep-tech architecture. If the topic is a mainstream consumer hardware product (e.g., phones, consoles, GPUs) and the snippets do NOT explicitly confirm an official release, you MUST assume it is unreleased and REJECT IT ("exists": false).
+    - LEGACY RULE (Version Forgiveness): If the product is a real, older, legacy, or retired version of a technology, DO NOT REJECT IT. Mark as "exists": true. You must allow research on historical benchmarks.
     
     Step 2 (Intent Classification): Determine the depth of research required based on the topic. Choose ONE:
     - "DEEP_DIVE": Requires searching for complex benchmarks, feature lists, specs, or reviews for a single product.
@@ -51,8 +55,9 @@ def analyze_and_route_query(topic):
     
     CRITICAL: Output ONLY a valid JSON object matching this exact schema:
     {{
-        "exists": true,
-        "existence_reasoning": "Brief explanation of what this product is, and confirmation of its release relative to {current_date}, or why it was rejected.",
+        "exact_quote_from_snippet": "The verbatim text from the snippets proving it is released or a rumor. Output 'None' if snippets are empty.",
+        "existence_reasoning": "Analyze the quote. Does it indicate a released product or a future/rumored one?",
+        "exists": true, 
         "intent": "NEGATIVE_FACT_CHECK", 
         "subject_domain": "ARCHITECTURE",
         "search_queries": ["query 1", "query 2"]
@@ -63,4 +68,4 @@ def analyze_and_route_query(topic):
         return json.loads(raw_response)
     except Exception as e:
         print(f"⚠️ Gatekeeper Error: {e}")
-        return {"exists": True, "existence_reasoning": "Failsafe triggered", "intent": "DEEP_DIVE", "search_queries": [topic]}
+        return {"exists": True, "exact_quote_from_snippet": "None", "existence_reasoning": "Failsafe triggered", "intent": "DEEP_DIVE", "subject_domain": "GENERAL_OVERVIEW", "search_queries": [topic]}
