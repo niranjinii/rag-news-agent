@@ -7,7 +7,7 @@ def main():
     
     # 1. Create a dummy state that looks exactly like what LangGraph will pass in
     mock_state = PipelineState(
-        topic="iPhone 20 Specs", # Change this to whatever you want
+        topic="NVIDIA GeForce RTX 6090 Ti Founders Edition official thermal architecture specs", # Change this to whatever you want
         research_data=None,
         draft_article=None,
         evaluation=None,

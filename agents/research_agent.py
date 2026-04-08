@@ -318,9 +318,14 @@ def research_agent_node(state: PipelineState) -> dict:
     # ==========================================
     final_sources_list = editor_output.get("sources", editor_output.get("unique_claims", editor_output.get("claims", [])))
 
-    # CLEANUP: Renumber the IDs sequentially after deduplication so there are no gaps
+    # CLEANUP: Renumber IDs and slice massive chunks to prevent Agent 2 from crashing
     for index, source in enumerate(final_sources_list):
         source["id"] = index + 1
+        
+        # SLICE: Keep the context but cap the length so the 8b model stays stable.
+        # 1,500 chars is enough for evidence without hitting token limits.
+        if "raw_chunk" in source and len(source["raw_chunk"]) > 1500:
+            source["raw_chunk"] = source["raw_chunk"][:1500] + "... [TRUNCATED FOR TRANSIT]"
 
     final_output = {
         "research_data": {
