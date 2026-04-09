@@ -296,7 +296,7 @@ def call_ollama(prompt: str, temperature: float, top_p: float, max_tokens: int) 
     }
     endpoint = f"{OLLAMA_URL}/api/generate"
     start_time = time.perf_counter()
-    r = requests.post(endpoint, json=payload, timeout=240)
+    r = requests.post(endpoint, json=payload, timeout=1800)
     elapsed_seconds = time.perf_counter() - start_time
 
     print(

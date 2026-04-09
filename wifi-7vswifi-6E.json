@@ -1,0 +1,52 @@
+{
+  "metadata": {
+    "topic": "Wi-fi 7 vs Wi-fi 6E",
+    "persona": "Technical Journalist",
+    "word_count": 800,
+    "revision_count": 2,
+    "final_status": "NEEDS_REVISION"
+  },
+  "article": {
+    "title": "Wi-Fi 7 vs Wi-Fi 6E: A Technical Analysis of Performance Gains",
+    "meta_description": "Wi-Fi 7 represents a significant advancement over its predecessor, Wi-Fi 6E, in terms of performance and capabilities.",
+    "content_md": "Wi-Fi 7 represents a significant advancement over its predecessor, Wi-Fi 6E, in terms of performance and capabilities. One key area of improvement is in Multi-User Multiple Input Multiple Output (MU-MIMO) technology. While Wi-Fi 6E supports up to 8x8 MU-MIMO for efficient data transmission to multiple devices simultaneously [1], Wi-Fi 7 doubles this capacity, offering support for up to 16x16 MU-MIMO. This expansion enhances network efficiency and performance, particularly in high-density environments where numerous devices are connected concurrently [1]. Furthermore, Wi-Fi 7 significantly boosts speeds compared to Wi-Fi 6E. Wi-Fi 6E has a maximum speed of up to 9.6 Gbps, achieved by utilizing 160 MHz channels within the 6 GHz band [2]. In contrast, Wi-Fi 7 reaches speeds of up to 46 Gbps, a substantial increase attributed to its support for 320 MHz channels and the implementation of higher-order modulation schemes, specifically 4096-Quadrature Amplitude Modulation (QAM) [2]. The introduction of Multi-Link Operation (MLO) in Wi-Fi 7 is another critical feature that enhances performance. Unlike Wi-Fi 6E, which does not support MLO and thus requires devices to connect over a single band at a time, Wi-Fi 7 allows for simultaneous connections across multiple frequency bands, including 2.4 GHz, 5 GHz, and 6 GHz [3]. This capability improves speed, reduces latency, and increases connection reliability by enabling devices to leverage the best available bandwidth across different bands [3]. In addition to these advancements, Wi-Fi 7 also refines Time-Waiting Tunnel (TWT) functionality. While Wi-Fi 6E incorporates TWT for scheduling device wake times and improving power efficiency for Internet of Things (IoT) devices [4], Wi-Fi 7 enhances TWT further, offering superior power management and efficiency. This is particularly beneficial for battery-powered devices that rely on optimized power consumption to extend operational life [4]. The increased data throughput in Wi-Fi 7 compared to Wi-Fi 6E is also noteworthy. Wi-Fi 7 achieves this by adopting 4096-QAM, which allows each symbol to carry 12 bits of data. In comparison, Wi-Fi 6E employs 1024-QAM, capable of carrying only 10 bits per symbol [5]. This transition to a higher-order QAM scheme in Wi-Fi 7 results in an approximate 20% increase in data throughput [5]. The implications of these advancements are significant for practical usage. For instance, the enhanced MU-MIMO capabilities and MLO feature in Wi-Fi 7 can handle larger numbers of devices simultaneously, making it more suitable for dense enterprise environments or large public hotspots [1, 3]. Similarly, the substantial speed increase and improved TWT functionality in Wi-Fi 7 are particularly advantageous for applications requiring high-bandwidth connections, such as online gaming or video streaming, while also extending battery life for mobile devices [2, 4]. Based on these evidence-backed performance gains, a recommendation can be made for organizations considering upgrades to their wireless infrastructure. For environments demanding high capacity and speed, the adoption of Wi-Fi 7 is strongly advised over Wi-Fi 6E due to its superior MU-MIMO capabilities, significantly higher speeds, and advanced MLO feature [1, 2, 3]. Furthermore, for devices prioritizing power efficiency and extended operational life, the enhanced TWT functionality in Wi-Fi 7 offers a clear benefit over its predecessor [4].",
+    "citations": [
+      "[1] https://www.velocitymicro.com/blog/wi-fi-7-vs-6e/",
+      "[2] https://www.velocitymicro.com/blog/wi-fi-7-vs-6e/",
+      "[3] https://www.velocitymicro.com/blog/wi-fi-7-vs-6e/",
+      "[4] https://www.velocitymicro.com/blog/wi-fi-7-vs-6e/",
+      "[5] https://www.velocitymicro.com/blog/wi-fi-7-vs-6e/"
+    ]
+  },
+  "evaluation": {
+    "scores": {
+      "accuracy": 0.4571,
+      "citation_quality": 0.7273,
+      "readability": 0.1887,
+      "coverage": 1.0,
+      "claim_density": 0.8696,
+      "factual": 0.4571,
+      "seo": 0.7273
+    },
+    "status": "NEEDS_REVISION",
+    "remarks": [
+      "Decision: REWRITE_ACCURACY",
+      "Reason: Accuracy below threshold: 45.71 < 95.00",
+      "Factual Accuracy: 45.71/100",
+      "Citation Quality: 72.73/100",
+      "Readability (Flesch): 18.87",
+      "Coverage: 100.00%",
+      "Claim Density: 86.96%"
+    ],
+    "rewrite_suggestions": [
+      "Rewrite low-support claims to closely match source evidence and keep inline citations.",
+      "Clarify ambiguous statements with explicit, source-backed wording.",
+      "Fix citation mapping so each sentence points to the most relevant source ID.",
+      "Improve readability by shortening long sentences and removing redundant phrases."
+    ]
+  },
+  "research_summary": {
+    "total_claims": 5,
+    "total_sources": 5
+  }
+}

@@ -131,6 +131,13 @@ __pypackages__/
 celerybeat-schedule
 celerybeat.pid
 
+# Local secrets and local model artifacts
+.env
+.env.*
+!.env.example
+*.gguf
+finetuning/ollama/Modelfile
+
 # SageMath parsed files
 *.sage.py
 
