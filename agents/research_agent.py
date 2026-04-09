@@ -1,4 +1,5 @@
 import json
+from pathlib import Path
 from state import PipelineState, ResearchData
 from tools.web_search import ask_llm, generate_subqueries, google_search, enrich_and_deduplicate
 from tools.knowledge_graph import verify_entity_with_wikidata # <-- NEW: Import your API tool
@@ -6,6 +7,27 @@ from tools.scraper import scrape_and_chunk, scrape_pdf
 from tools.vector_store import run_hybrid_search, rerank_chunks
 from tools.query_router import analyze_and_route_query
 import time
+
+
+def _safe_topic_filename(topic: str) -> str:
+    """Convert topic text to a filesystem-safe filename stem."""
+    normalized = "".join(ch.lower() if ch.isalnum() else "_" for ch in (topic or ""))
+    collapsed = "_".join(part for part in normalized.split("_") if part)
+    return collapsed or "untitled_topic"
+
+
+def _log_agent1_output(payload: dict, topic: str) -> None:
+    """Persist Agent1 output to research_outputs/<topic>.json."""
+    project_root = Path(__file__).resolve().parents[1]
+    output_dir = project_root / "research_outputs"
+    output_dir.mkdir(parents=True, exist_ok=True)
+    output_path = output_dir / f"{_safe_topic_filename(topic)}.json"
+    try:
+        with output_path.open("w", encoding="utf-8") as file:
+            json.dump(payload, file, ensure_ascii=False, indent=2)
+        print(f"[RESEARCH AGENT] 📝 Agent1 output saved to: {output_path}")
+    except Exception as error:
+        print(f"[RESEARCH AGENT] ⚠️ Failed to write Agent1 output JSON: {error}")
 
 def clean_llm_json(raw_str):
     """Bulletproof JSON extractor that ignores conversational filler and markdown."""
@@ -333,6 +355,8 @@ def research_agent_node(state: PipelineState) -> dict:
             "sources": final_sources_list
         }
     }
+
+    _log_agent1_output(final_output, topic)
     
     print(f"[RESEARCH AGENT] ✓ Live research complete! Crunched down to {len(final_sources_list)} unique facts.")
     return final_output
