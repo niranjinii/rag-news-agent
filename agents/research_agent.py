@@ -332,7 +332,7 @@ def research_agent_node(state: PipelineState) -> dict:
         # ==========================================
         print("🧠 Asking Gemini to deduplicate claims and write definitions...")
     
-        # NEW: Pass BOTH the extracted sources and the KG result
+        # Pass BOTH the extracted sources and the KG result
         editor_output = enrich_and_deduplicate(final_sources, kg_result)
 
     # ==========================================
@@ -340,9 +340,20 @@ def research_agent_node(state: PipelineState) -> dict:
     # ==========================================
     final_sources_list = editor_output.get("sources", editor_output.get("unique_claims", editor_output.get("claims", [])))
 
-    # CLEANUP: Renumber IDs and slice massive chunks to prevent Agent 2 from crashing
-    for index, source in enumerate(final_sources_list):
-        source["id"] = index + 1
+    # CLEANUP: Map unique URLs to consistent IDs and slice massive chunks
+    url_to_id_map = {}
+    current_id_counter = 1
+    
+    for source in final_sources_list:
+        url = source.get("url")
+        
+        # 1. Assign or retrieve the ID for this specific URL
+        if url not in url_to_id_map:
+            url_to_id_map[url] = current_id_counter
+            current_id_counter += 1
+            
+        # 2. Update the source with the shared ID
+        source["id"] = url_to_id_map[url]
         
         # SLICE: Keep the context but cap the length so the 8b model stays stable.
         # 1,500 chars is enough for evidence without hitting token limits.
@@ -358,5 +369,5 @@ def research_agent_node(state: PipelineState) -> dict:
 
     _log_agent1_output(final_output, topic)
     
-    print(f"[RESEARCH AGENT] ✓ Live research complete! Crunched down to {len(final_sources_list)} unique facts.")
+    print(f"[RESEARCH AGENT] ✓ Live research complete! Crunched down to {len(final_sources_list)} facts across {len(url_to_id_map)} unique sources.")
     return final_output

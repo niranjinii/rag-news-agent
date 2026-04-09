@@ -1,59 +1,52 @@
 {
   "research_data": {
     "definitions": {
-      "QAM modulation": "Quadrature Amplitude Modulation (QAM) is a method of encoding digital information onto an analog carrier signal by changing both the amplitude and the phase of the carrier wave.",
-      "preamble puncturing": "Preamble puncturing is a technique used in wireless communication to improve throughput by allowing a transmitter to use a portion of a channel that would otherwise be occupied by a legacy device, effectively 'puncturing' out the interference.",
-      "Multi-Link Operation (MLO)": "Multi-Link Operation (MLO) is a feature in Wi-Fi 7 that allows a device to simultaneously connect and transmit data over multiple frequency bands and channels, enhancing speed, reliability, and reducing latency."
+      "multi-link operation": "A feature allowing devices to simultaneously connect and transmit data across multiple Wi-Fi bands and channels to improve throughput and reliability.",
+      "320MHz channel bandwidth": "A channel width in Wi-Fi that is twice as wide as the 160MHz channels used in previous generations, enabling significantly higher data transmission rates.",
+      "4K-QAM": "A modulation scheme that encodes more data per symbol compared to lower-order QAM schemes, increasing the maximum data throughput of Wi-Fi transmissions."
     },
     "sources": [
       {
         "id": 1,
-        "subtopic": "Wi-Fi 7 technical specifications vs Wi-Fi 6E",
-        "extracted_claim": "Wi-Fi 7 was officially standardized in 2024, distinguishing it from Wi-Fi 6 (launched in 2019) and Wi-Fi 6E (launched in 2021).",
+        "subtopic": "Wi-Fi 7 capacity improvements over Wi-Fi 6E",
+        "extracted_claim": "Wi-Fi 7 was officially standardized in 2024, distinguishing it from Wi-Fi 6 and Wi-Fi 6E which were launched in 2019 and 2021 respectively.",
         "raw_chunk": "Wi-Fi 6 vs Wi-Fi 6E vs Wi-Fi 7: What’s the Difference?  \nThe rapid evolution of Wi-Fi technology has brought faster, more stable, and more efficient wireless connectivity to homes and businesses alike. Wi-Fi 6 is now a mature and widely adopted standard, especially in consumer-grade access points and enterprise networks. Wi-Fi 6E, offering access to the 6GHz band, is gaining traction in enterprise deployments where greater bandwidth and lower latency are required. Wi-Fi 7, the latest generation, was officially standardized in 2024 and is already entering the market through cutting-edge routers and enterprise-grade solutions.  \nSo, what are the differences between Wi-Fi 6, Wi-Fi 6E, and Wi-Fi 7? Let's explore the distinctions in the comparison table below. Understanding these differences can be highly beneficial in choosing the wireless network technology that best suits your needs.  \nWi-Fi | Wi-Fi 6 | Wi-Fi 6E | Wi-Fi 7 |\nLaunch Date | 2019 | 2021 | 2024 |",
         "url": "https://www.fs.com/blog/wifi-6-vs-wifi-6e-vs-wifi-7-how-to-choose-36.html"
       },
       {
         "id": 2,
-        "subtopic": "Wi-Fi 7 vs Wi-Fi 6E performance comparison 2026",
-        "extracted_claim": "WiFi 7 is roughly 2.4× faster than WiFi 6E for the same radio setup and can deliver multi-gigabit speeds wirelessly to compatible devices near the router, outperforming WiFi 6E especially in busy households with multiple high-bandwidth activities.",
-        "raw_chunk": "On paper, WiFi 7 is roughly 2.4× faster than WiFi 6E for the same radio setup. In the real world, the gap is narrower — but still meaningful in the right conditions. If you have multi-gigabit fiber internet (1 Gbps or faster), WiFi 7 can actually deliver those speeds wirelessly to compatible devices near the router. With WiFi 6E, most people top out around 1–2 Gbps in ideal conditions.  \nWhere WiFi 7 really pulls ahead is in busy households. If you have multiple people streaming 4K, a few smart cameras recording, someone gaming online, and another person on a video call — all at the same time — WiFi 7 handles that load with noticeably less stuttering and latency spikes than WiFi 6E. The combination of wider channels, better modulation, and MLO means the router can keep everyone happy without forcing devices to fight for bandwidth.",
-        "url": "https://www.modemguides.com/blogs/modemguides-blog/wifi-7-vs-wifi-6e?srsltid=AfmBOopvyhV0FEqAeJ6fdv0oCGS7B94oqBtB4mSUkzn4tF6BYofiA5q6"
+        "subtopic": "Wi-Fi 7 vs Wi-Fi 6E speed comparison",
+        "extracted_claim": "Wi-Fi 7 offers improvements over Wi-Fi 6E, including multi-link operation, faster transmission rates, wider channels, and improved latency, while maintaining compatibility with the 6 GHz band.",
+        "raw_chunk": "While Wi-Fi 6E significantly upgraded from standard Wi-Fi 6 by adding access to the 6 GHz band, Wi-Fi 7 reimagines what's possible with wireless connectivity. Key differences include multi-link operation, faster transmission rates, wider channels, and improved latency.  \nOne of Wi-Fi 6E’s biggest advantages is its access to the 6 GHz spectrum, which experiences less congestion because it’s not yet widely used. In contrast, the 2.4 GHz and 5 GHz bands are considered crowded because they’re used by most Wi-Fi networks and everyday devices, often resulting in slower speeds and more signal interference. However, Wi-Fi 6E still has limitations in how it manages connections across multiple bands and its maximum data rates.  \nWi-Fi 7 addresses these limitations while maintaining compatibility with the 6 GHz band, effectively making it a supercharged version of Wi-Fi 6E with significant technological advances.",
+        "url": "https://ezeefiber.com/blog/wifi6e-vs-wifi7-differences/"
+      },
+      {
+        "id": 1,
+        "subtopic": "Wi-Fi 7 capacity improvements over Wi-Fi 6E",
+        "extracted_claim": "Wi-Fi 7 introduces major enhancements such as 320MHz channel bandwidth and 4K-QAM, enabling extremely high throughput and low latency.",
+        "raw_chunk": "What Is Wi-Fi 7?  \nWi-Fi 7 (IEEE 802.11be) is the latest Wi-Fi standard, officially finalized in 2024. It introduces major enhancements such as 320MHz channel bandwidth, 4K-QAM, and Multi-Link Operation, enabling extremely high throughput, low latency, and improved reliability across multiple frequency bands. If you are experiencing issues with consistent buffering, latency, or congestion, a Wi-Fi 7 wireless access point may be your best solution.  \nWi-Fi 6 vs Wi-Fi 6E vs Wi-Fi 7: What’s the Difference?",
+        "url": "https://www.fs.com/blog/wifi-6-vs-wifi-6e-vs-wifi-7-how-to-choose-36.html"
       },
       {
         "id": 3,
-        "subtopic": "Wi-Fi 7 vs Wi-Fi 6E performance comparison 2026",
-        "extracted_claim": "WiFi 7 offers doubled channel widths and higher QAM modulation compared to WiFi 6E, resulting in real improvements in speed, latency, and multi-device performance.",
-        "raw_chunk": "WiFi 7 is a genuine generational upgrade over WiFi 6E. The combination of doubled channel widths, higher QAM modulation, and Multi-Link Operation delivers real improvements in speed, latency, and multi-device performance that go well beyond marketing fluff. But whether it's worth *your* money right now depends entirely on your internet plan, how many devices you're running, and how demanding your usage is.  \nFor power users, gamers, and busy smart homes — especially those with multi-gig fiber — WiFi 7 is already delivering meaningful benefits and will only get better as more client devices adopt the standard. For everyone else, WiFi 6E remains a rock-solid choice, and there's absolutely no rush to replace it. The beauty of backward compatibility means you can upgrade your router now and let your devices catch up over the next couple of years.",
-        "url": "https://www.modemguides.com/blogs/modemguides-blog/wifi-7-vs-wifi-6e?srsltid=AfmBOopvyhV0FEqAeJ6fdv0oCGS7B94oqBtB4mSUkzn4tF6BYofiA5q6"
+        "subtopic": "Wi-Fi 7 capacity improvements over Wi-Fi 6E",
+        "extracted_claim": "Wi-Fi 7 has a maximum speed of up to 46 Gbps, compared to Wi-Fi 6E's maximum speed of up to 9.6 Gbps.",
+        "raw_chunk": "The following chart summarizes the primary distinctions between Wi-Fi 7 and Wi-Fi 6E:  \nFeature |\nWi-Fi 6E |\nWi-Fi 7 |\n|---|---|---|\nMaximum Speed |\nUp to 9.6 Gbps | Up to 46 Gbps |\nChannel Width |\n160 MHz (6 GHz band) | 320 MHz (6 GHz band) |\nBands Supported |\n2.4 GHz, 5 GHz, 6 GHz | 2.4 GHz, 5 GHz, 6 GHz |\nModulation |\n1024-QAM | 4096-QAM |\nSpatial Streams |\nUp to 8×8 MU-MIMO | Up to 16×16 MU-MIMO |\nMulti-Link Operation |\nNo | Yes, supports simultaneous operation on multiple bands |\nTarget Wake Time (TWT) |\nSupported for improved efficiency | Enhanced for better power efficiency and performance |\nLatency |\nLow latency for gaming and streaming | Improved latency for real-time applications |",
+        "url": "https://www.velocitymicro.com/blog/wi-fi-7-vs-6e/"
       },
       {
-        "id": 4,
-        "subtopic": "Wi-Fi 7 vs Wi-Fi 6E performance comparison 2026",
-        "extracted_claim": "WiFi 7 improves usable performance at range by combining the longer-range 5 GHz signal with the faster 6 GHz signal simultaneously, and by using preamble puncturing to improve throughput in less-than-ideal conditions.",
-        "raw_chunk": "This is one of the most common questions, and the honest answer is: not really. WiFi 7 operates on the same frequency bands as WiFi 6E — including the 6 GHz band, which has notoriously shorter range because higher-frequency signals are absorbed more easily by walls and obstacles. Your 6 GHz signal will still work best within about 15 feet of the router, whether you're using WiFi 6E or WiFi 7.  \nWhat WiFi 7 *does* improve is usable performance at range. Because MLO can combine the longer-range 5 GHz signal with the faster 6 GHz signal simultaneously, you may experience better speeds at medium distances than you would with WiFi 6E, which is limited to a single band at a time. Preamble puncturing also helps — it lets WiFi 7 use portions of a channel that have interference, rather than avoiding the entire channel, which can improve throughput in less-than-ideal conditions.",
-        "url": "https://www.modemguides.com/blogs/modemguides-blog/wifi-7-vs-wifi-6e?srsltid=AfmBOopvyhV0FEqAeJ6fdv0oCGS7B94oqBtB4mSUkzn4tF6BYofiA5q6"
+        "id": 3,
+        "subtopic": "Wi-Fi 7 capacity improvements over Wi-Fi 6E",
+        "extracted_claim": "Wi-Fi 7 supports up to 16×16 MU-MIMO, doubling the capacity of Wi-Fi 6E which supports up to 8×8 MU-MIMO.",
+        "raw_chunk": "**Wi-Fi 6E**: Supports up to 8×8 Multi-User Multiple Input Multiple Output (MU-MIMO), facilitating efficient data transmission to multiple devices simultaneously.**Wi-Fi 7**: Doubling the capacity, it supports up to 16×16 MU-MIMO, enhancing network efficiency and performance, especially in high-density environments.",
+        "url": "https://www.velocitymicro.com/blog/wi-fi-7-vs-6e/"
       },
       {
-        "id": 5,
-        "subtopic": "Wi-Fi 7 vs Wi-Fi 6E performance comparison 2026",
-        "extracted_claim": "WiFi 7 routers generally cost 30–80% more than comparable WiFi 6E models.",
-        "raw_chunk": "As of early 2026, WiFi 7 routers generally cost 30–80% more than comparable WiFi 6E models. Entry-level WiFi 7 routers start around $150–200, while flagship models and mesh systems can run $400–600+. WiFi 6E routers, by contrast, have dropped significantly in price and offer excellent value. Prices for WiFi 7 hardware are expected to continue falling through 2026–2027 as adoption increases.",
-        "url": "https://www.modemguides.com/blogs/modemguides-blog/wifi-7-vs-wifi-6e?srsltid=AfmBOopvyhV0FEqAeJ6fdv0oCGS7B94oqBtB4mSUkzn4tF6BYofiA5q6"
-      },
-      {
-        "id": 6,
-        "subtopic": "Wi-Fi 7 vs Wi-Fi 6E performance comparison 2026",
-        "extracted_claim": "WiFi 7 routers are fully backward compatible with WiFi 6E devices, but WiFi 6E devices cannot take advantage of WiFi 7-specific features like MLO or 320 MHz channels.",
-        "raw_chunk": "Absolutely. WiFi 7 routers are fully backward compatible with WiFi 6E, WiFi 6, WiFi 5, and older devices. Your existing phone, laptop, or tablet will connect and work perfectly — it just won't be able to take advantage of WiFi 7-specific features like MLO or 320 MHz channels. As you replace devices over time, they'll automatically benefit from the newer standard.",
-        "url": "https://www.modemguides.com/blogs/modemguides-blog/wifi-7-vs-wifi-6e?srsltid=AfmBOopvyhV0FEqAeJ6fdv0oCGS7B94oqBtB4mSUkzn4tF6BYofiA5q6"
-      },
-      {
-        "id": 7,
-        "subtopic": "Wi-Fi 7 vs Wi-Fi 6E performance comparison 2026",
-        "extracted_claim": "WiFi 7 has a maximum theoretical speed of up to 46 Gbps, compared to WiFi 6E's 9.6 Gbps.",
-        "raw_chunk": "That said, \"better on paper\" doesn't always mean \"worth your money today.\" Let's dig into exactly what separates these two standards so you can make an informed decision.  \nBest WiFi 7 Routers for 2026 — our top 10 picks, tested & ranked.  \nRead the List →## WiFi 6E vs. WiFi 7: The Specs Compared  \nThe easiest way to see what's changed is side by side. Here's how WiFi 6E and WiFi 7 stack up on the specs that actually matter for your home network:  \n| Specification | WiFi 6E (802.11ax) | WiFi 7 (802.11be) |\n|---|---|---|\n| Max Theoretical Speed | 9.6 Gbps | Up to 46 Gbps |\n| Frequency Bands | 2.4 / 5 / 6 GHz | 2.4 / 5 / 6 GHz |\n| Max Channel Width | 160 MHz | 320 MHz |\n| QAM (Modulation) | 1024-QAM | 4096-QAM |\n| MU-MIMO Streams | 8×8 | 16×16 |\n| Multi-Link Operation | No | Yes |\n| Preamble Puncturing | No | Yes |\n| Target Wake Time | Supported | Enhanced |\n| Security | WPA3 | WPA3 |\n| Backward Compatible | WiFi 6, 5, 4 | WiFi 6E, 6, 5, 4 |",
-        "url": "https://www.modemguides.com/blogs/modemguides-blog/wifi-7-vs-wifi-6e?srsltid=AfmBOopvyhV0FEqAeJ6fdv0oCGS7B94oqBtB4mSUkzn4tF6BYofiA5q6"
+        "id": 3,
+        "subtopic": "Wi-Fi 7 capacity improvements over Wi-Fi 6E",
+        "extracted_claim": "Wi-Fi 7 offers significantly higher maximum speeds than Wi-Fi 6E, reaching up to 46 Gbps with 320 MHz channels and 4096-QAM, compared to Wi-Fi 6E's 9.6 Gbps with 160 MHz channels.",
+        "raw_chunk": "**Wi-Fi 6E**: Offers maximum speeds of up to 9.6 Gbps, utilizing 160 MHz channels in the 6 GHz band.**Wi-Fi 7**: Significantly enhances speeds, reaching up to 46 Gbps, by supporting 320 MHz channels and higher-order modulation (4096-QAM).",
+        "url": "https://www.velocitymicro.com/blog/wi-fi-7-vs-6e/"
       }
     ]
   }
