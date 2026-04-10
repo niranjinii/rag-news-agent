@@ -1,0 +1,47 @@
+{
+  "research_data": {
+    "definitions": {
+      "NVLink domain": "A high-performance GPU-to-GPU interconnect structure within a cluster designed for rapid data exchange between graphics processing units.",
+      "Transformer Engine": "A specialized hardware component within a GPU designed to accelerate the computations required for transformer-based artificial intelligence models.",
+      "confidential computing": "A technology that protects data while it is being processed in use by encrypting it in memory, ensuring it remains inaccessible even to the system's operator.",
+      "NVLink": "A high-speed interconnect technology developed by NVIDIA for direct GPU-to-GPU communication, enabling faster data transfer and scalability in parallel computing tasks."
+    },
+    "sources": [
+      {
+        "id": 1,
+        "subtopic": "Nvidia Blackwell platform compute capabilities",
+        "extracted_claim": "The NVIDIA Blackwell GB200 NVL72 cluster integrates 36 GB200 Superchips, each consisting of 36 Grace CPUs and 72 Blackwell GPUs, creating a high-performance GPU-to-GPU interconnect structure known as the NVLink domain.",
+        "raw_chunk": "The NVIDIA Blackwell GB200 NVL72 cluster represents the most powerful configuration built on the NVIDIA Blackwell GPU architecture. This system showcases the full potential of NVIDIA Blackwell GPU specs, integrating 36 GB200 Superchips. Each Superchip consists of 36 Grace CPUs and 72 Blackwell GPUs, creating a high-performance GPU-to-GPU interconnect structure known as the NVLink domain. This cluster design combines cutting-edge hardware to provide an unmatched computing platform capable of acting as a single large GPU. With this innovative setup, the GB200 NVL72 delivers performance improvements of up to 30 times faster real-time trillion-parameter large language model (LLM) inference compared to previous generations. These advanced Blackwell GPUs offer unmatched performance for training and inference.",
+        "url": "https://www.nexgencloud.com/blog/performance-benchmarks/nvidia-blackwell-gpus-architecture-features-specs"
+      },
+      {
+        "id": 1,
+        "subtopic": "Nvidia Blackwell platform compute capabilities",
+        "extracted_claim": "The NVIDIA Blackwell GPU features a second-generation Transformer Engine, includes 208 billion transistors, and is optimized for large-scale AI models with confidential computing and advanced NVLink for high-speed GPU connectivity.",
+        "raw_chunk": "**What is NVIDIA Blackwell?**  \nNVIDIA Blackwell is the latest GPU architecture designed for generative AI, featuring groundbreaking compute performance and optimised for large-scale AI models. The **NVIDIA Blackwell GPU** series includes powerful systems like the GB200 NVL72, designed to handle trillion-parameter LLMs with ease.  \n**What are the key features of NVIDIA Blackwell?**  \nBlackwell includes a second-generation Transformer Engine, 208 billion transistors, confidential computing for secure AI, and advanced NVLink for high-speed GPU connectivity.  \n**What are Blackwell GPUs used for?**",
+        "url": "https://www.nexgencloud.com/blog/performance-benchmarks/nvidia-blackwell-gpus-architecture-features-specs"
+      },
+      {
+        "id": 2,
+        "subtopic": "Nvidia GB200 Blackwell GPU detailed review",
+        "extracted_claim": "The Blackwell B200 GPU is part of the Bianca board in the GB200 system, which features a 1:2 CPU to GPU ratio.",
+        "raw_chunk": "**Compute Tray Diagrams & Cabling**  \nThe heart of the GB200 NVL72/NVL36x2 is the Bianca board. The Bianca board contains two Blackwell B200 GPUs and a single Grace CPU. The ratio between CPU and GPU is now 1:2 on a board compared to GH200, which is a 1:1 ratio. Most of the customers that evaluated GH200 have told Nvidia that it was too expensive as 1:1 CPU ratio was too much for their workloads. This is one of the main reasons why GH200 shipped in such low volumes compared to HGX H100 (2 x86 CPUs, 8 H100 GPUs). For Blackwell, GB200 volume is way up relatively and there will be crossover in unit shipments versus HGX Blackwell B100/B200.",
+        "url": "https://newsletter.semianalysis.com/p/gb200-hardware-architecture-and-component"
+      },
+      {
+        "id": 3,
+        "subtopic": "Nvidia GB200 Blackwell GPU detailed review",
+        "extracted_claim": "The Nvidia B200 maintains NVIDIA's established networking approach with 18 NVLink connections per GPU, supporting 900GB/s bisection bandwidth.",
+        "raw_chunk": "B200 maintains NVIDIA's established networking approach with 18 NVLink connections per GPU supporting 900GB/s bisection bandwidth.²⁰ Eight-GPU HGX B200 nodes connect through 400GbE or 800GbE InfiniBand, maintaining the network hierarchy that HPC architects understand. Existing InfiniBand deployments upgrade to support B200 through switch firmware updates and optical module replacements. The evolutionary path minimizes deployment risk and accelerates time to production.  \nGB200 NVL72 revolutionizes cluster architecture by connecting 72 Blackwell GPUs through fifth-generation NVLink at 1.8TB/s per GPU.²¹ The entire system functions as a single logical GPU with 13 petaflops of compute and 30TB of coherent memory.²² Traditional network boundaries dissolve as NVLink switches replace InfiniBand for intra-rack communication. The architecture requires complete network redesign but eliminates bottlenecks that limit strong scaling in distributed training.",
+        "url": "https://introl.com/blog/nvidia-b200-vs-gb200-deployment-guide"
+      },
+      {
+        "id": 1,
+        "subtopic": "Nvidia Blackwell platform compute capabilities",
+        "extracted_claim": "The NVIDIA GB200 NVL72 cluster, utilizing Blackwell’s Decompression Engine, offers up to 18X faster database query performance than traditional CPUs.",
+        "raw_chunk": "The NVIDIA GB200 NVL72 cluster enables accelerated data processing, offering up to 18X faster database query performance than traditional CPUs. Using NVLink-C2C and Blackwell’s Decompression Engine, the NVIDIA GB200 dramatically improves data analytics and data science workflow. This makes it an ideal choice for enterprises looking to efficiently process large volumes of data.",
+        "url": "https://www.nexgencloud.com/blog/performance-benchmarks/nvidia-blackwell-gpus-architecture-features-specs"
+      }
+    ]
+  }
+}

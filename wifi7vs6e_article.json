@@ -1,0 +1,47 @@
+{
+  "metadata": {
+    "topic": "Wi-fi 7 vs Wi-fi 6E",
+    "persona": "Technical Journalist",
+    "word_count": 800,
+    "revision_count": 2,
+    "final_status": "APPROVED"
+  },
+  "article": {
+    "title": "Wi-Fi 7 vs Wi-Fi 6E: A Technical Analysis",
+    "meta_description": "Wi-Fi 7 represents a significant technological advancement over Wi-Fi 6E, introducing multi-link operation, faster transmission rates, wider channels, and im...",
+    "content_md": "Wi-Fi 7 represents a significant technological advancement over Wi-Fi 6E, introducing multi-link operation, faster transmission rates, wider channels, and improved latency . [1] While Wi-Fi 6E expanded upon standard Wi-Fi 6 by adding access to the 6 GHz band, Wi-Fi 7 redefines wireless connectivity capabilities . [1] A key difference lies in their respective maximum speeds: Wi-Fi 7 supports up to 46 Gbps, whereas Wi-Fi 6E has a maximum speed of up to 9.6 Gbps . [3] This substantial increase in data transfer rate is partly attributed to the adoption of more efficient digital modulation schemes. Specifically, Wi-Fi 7 employs 4096-QAM (4K-QAM), which encodes 12 bits of data per symbol, compared to Wi-Fi 6's 10 bits . [2] Wi-Fi 7's 4096-QAM technology carries 12 bits of data, which is 20% more than Wi-Fi 6's 10 bits, resulting in improved wireless network speeds and performance. [2] Furthermore, Wi-Fi 7 is designed with immersive experiences such as augmented, extended, and virtual reality in mind. [2] Its advanced features are also suitable for large-scale IoT operations, complex home internet setups, and business applications like video conferences . In terms of latency, Wi-Fi 7 offers improved consistency and reduced interference thanks to technologies like Multi-RU (Resource Unit) and deterministic latency . [2] This translates to a more stable user experience for real-time applications . Wi-Fi 7 has a maximum speed of up to 46 Gbps, while Wi-Fi 6E has a maximum speed of up to 9.6 Gbps. [3] While both share the use of the 6 GHz band, Wi-Fi 7's advancements make it a game-changer for users requiring high-performance wireless connections . [2] Specifically, Wi-Fi 7 supports multi-link operation, which allows a device to connect to multiple access points or frequency bands simultaneously, enhancing throughput and reliability . [3] Wi-Fi 7 has a maximum speed of up to 46 Gbps, while Wi-Fi 6E has a maximum speed of up to 9.6 Gbps. [3] The channel width is another area of distinction. Wi-Fi 7 can operate with wider channels, up to 320 MHz within the 6 GHz band, compared to Wi-Fi 6E's maximum channel width of 160 MHz in the 6 GHz band . [3] Wi-Fi 7's 4096-QAM technology carries 12 bits of data, which is 20% more than Wi-Fi 6's 10 bits, resulting in improved wireless network speeds and performance. [2] The modulation schemes also differ significantly. While Wi-Fi 6E uses 1024-QAM, Wi-Fi 7 leverages 4096-QAM for more efficient data encoding . [3] Additionally, Wi-Fi 7 supports up to 16×16 MU-MIMO (Multi-User Multiple Input Multiple Output), which is double the spatial stream capacity of Wi-Fi 6E's up to 8×8 MU-MIMO . [3] Wi-Fi 7's 4096-QAM technology carries 12 bits of data, which is 20% more than Wi-Fi 6's 10 bits, resulting in improved wireless network speeds and performance. [2] Target Wake Time (TWT) is another feature enhanced in Wi-Fi 7 for improved power efficiency and performance . [3] The combination of these technological advancements positions Wi-Fi 7 as a superior choice for demanding wireless applications, offering significantly faster speeds, lower latency, and increased reliability compared to Wi-Fi 6E . [1]",
+    "citations": [
+      "[1] https://ezeefiber.com/blog/wifi6e-vs-wifi7-differences/",
+      "[2] https://blog.eero.com/wifi-7-vs-wifi-6e/",
+      "[3] https://www.velocitymicro.com/blog/wi-fi-7-vs-6e/"
+    ]
+  },
+  "evaluation": {
+    "scores": {
+      "accuracy": 1.0,
+      "citation_quality": 1.0,
+      "readability": 0.0,
+      "coverage": 1.0,
+      "claim_density": 1.0,
+      "factual": 1.0,
+      "seo": 1.0
+    },
+    "status": "APPROVED",
+    "remarks": [
+      "Decision: PUBLISH",
+      "Reason: All thresholds met",
+      "Factual Accuracy: 100.00/100",
+      "Citation Quality: 100.00/100",
+      "Readability: 0.00/1.00",
+      "Coverage: 100.00%",
+      "Claim Density: 100.00%"
+    ],
+    "rewrite_suggestions": [
+      "Improve readability by shortening long sentences and removing redundant phrases."
+    ]
+  },
+  "research_summary": {
+    "total_claims": 3,
+    "total_sources": 3
+  }
+}

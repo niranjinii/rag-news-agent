@@ -1,0 +1,49 @@
+{
+  "metadata": {
+    "topic": "Wi-fi 7 vs Wi-fi 6E",
+    "persona": "Technical Journalist",
+    "word_count": 800,
+    "revision_count": 2,
+    "final_status": "NEEDS_REVISION"
+  },
+  "article": {
+    "title": "Wi-Fi 7 vs Wi-Fi 6E: A Technical Comparison",
+    "meta_description": "Wi-Fi 7 represents a significant advancement over Wi-Fi 6E.",
+    "content_md": "Wi-Fi 7 represents a significant advancement over Wi-Fi 6E. Introducing Multi-Link Operation (MLO) and higher-order modulation schemes to enhance throughput and reduce latency, While Wi-Fi 6E expanded upon standard Wi-Fi 6 by adding access to the 6 GHz band. [2] In practical terms, In practical terms, Wi-Fi 7 redefines wireless connectivity with its ability to utilize multiple frequency bands simultaneously for a device. Wi-Fi 7 offers significant upgrades over Wi-Fi 6E, including multi-link operation, faster transmission rates, wider channels, and improved latency. [2] In practical terms, Wi-Fi 7 has a maximum speed of up to 46 Gbps. Compared to Wi-Fi 6E's maximum speed of up to 9. 6 Gbps. This Multi-Link Operation allows devices to leverage multiple channels concurrently. [1] [2] A substantial improvement over previous Wi-Fi versions limited to using only one band at a time. This capability is akin to upgrading from a single-lane road to a three-lane highway. Enabling data to travel across all available channels simultaneously rather than being confined to just one. The raw speed advantage is evident, with Wi-Fi 7 significantly outperforming Wi-Fi 6E. [2] In practical terms, In practical terms, Firstly, Wi-Fi 7 supports wider channels. Doubling the maximum channel width from 160 MHz in Wi-Fi 6E to 320 MHz. This expansion allows for more data to be transmitted at once. [2] [1] Leading to faster performance in bandwidth-intensive tasks such as 4K streaming and large file downloads when conditions are optimal. Secondly, Wi-Fi 7 adopts a higher-order modulation scheme called 4096-QAM. [1] In practical terms, In practical terms, In contrast, Wi-Fi 6E employs 1024-QAM. The advancement to 4096-QAM enables each symbol to carry 12 bits of data, compared to 10 bits for 1024-QAM in Wi-Fi 6E. [2] In practical terms, In practical terms, This results in an approximate 20% increase in data throughput for Wi-Fi 7 compared to Wi-Fi 6E. Furthermore, Wi-Fi 7 enhances network efficiency and performance by doubling the capacity of Wi-Fi 6E, While Wi-Fi 6E supports up to 8×8 Multi-User Multiple Input Multiple Output (MU-MIMO). [2] In practical terms, Wi-Fi 7 increases this capability to up to 16×16 MU-MIMO. Operationally, Operationally, this doubled capacity significantly improves the network's ability to efficiently transmit data to multiple devices simultaneously, especially in high-density environments. [2] From a performance perspective, These include 4K/8K streaming, virtual reality, and online gaming, Which can now benefit from significantly faster speeds and reduced latency provided by Wi-Fi 7. In practical terms, In summary, Wi-Fi 7 offers a substantial upgrade over Wi-Fi 6E with its Multi-Link Operation feature. [2] Operationally, Higher speed capabilities, wider channels, And enhanced network efficiency through increased MU-MIMO capacity.",
+    "citations": [
+      "[1] https://ezeefiber.com/blog/wifi6e-vs-wifi7-differences/",
+      "[2] https://www.velocitymicro.com/blog/wi-fi-7-vs-6e/"
+    ]
+  },
+  "evaluation": {
+    "scores": {
+      "accuracy": 0.8154,
+      "citation_quality": 0.5,
+      "readability": 0.21,
+      "coverage": 1.0,
+      "claim_density": 0.8667,
+      "factual": 0.8154,
+      "seo": 0.5
+    },
+    "status": "NEEDS_REVISION",
+    "remarks": [
+      "Decision: REWRITE_ACCURACY",
+      "Reason: Accuracy below threshold: 81.54 < 95.00",
+      "Factual Accuracy: 81.54/100",
+      "Citation Quality: 50.00/100",
+      "Readability: 0.21/1.00",
+      "Coverage: 100.00%",
+      "Claim Density: 86.67%"
+    ],
+    "rewrite_suggestions": [
+      "Rewrite low-support claims to closely match source evidence and keep inline citations.",
+      "Clarify ambiguous statements with explicit, source-backed wording.",
+      "Fix citation mapping so each sentence points to the most relevant source ID.",
+      "Improve readability by shortening long sentences and removing redundant phrases."
+    ]
+  },
+  "research_summary": {
+    "total_claims": 9,
+    "total_sources": 9
+  }
+}

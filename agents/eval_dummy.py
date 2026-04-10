@@ -320,11 +320,17 @@ class EditorAgent:
         """Check sentence-to-citation semantic relevance (0-100 score)."""
         citation_instances = self._extract_citation_instances(draft)
         sources = context.get("sources", []) if isinstance(context, dict) else []
-        source_map = {
-            src.get("id"): self._build_source_text(src)
-            for src in sources
-            if isinstance(src, dict) and isinstance(src.get("id"), int)
-        }
+        source_map: dict[int, list[str]] = {}
+        for src in sources:
+            if not isinstance(src, dict):
+                continue
+            source_id = src.get("id")
+            if not isinstance(source_id, int):
+                continue
+            source_text = self._build_source_text(src)
+            if not source_text:
+                continue
+            source_map.setdefault(source_id, []).append(source_text)
 
         if not citation_instances:
             self._log("citation_quality", "No citations found in draft", citation_score=0.0)
@@ -334,9 +340,18 @@ class EditorAgent:
                 "checked": 0,
             }
 
-        source_ids = list(source_map.keys())
-        source_texts = [source_map[src_id] for src_id in source_ids]
-        source_emb = self.embedding_model.encode(source_texts, convert_to_numpy=True) if source_texts else np.array([])
+        source_ids: list[int] = []
+        source_texts: list[str] = []
+        for src_id, texts in source_map.items():
+            for text in texts:
+                source_ids.append(src_id)
+                source_texts.append(text)
+
+        source_emb = (
+            self.embedding_model.encode(source_texts, convert_to_numpy=True)
+            if source_texts
+            else np.array([])
+        )
 
         passing = 0
         mis_citations: list[str] = []
@@ -347,16 +362,24 @@ class EditorAgent:
                 continue
 
             sent_emb = self.embedding_model.encode([sentence], convert_to_numpy=True)
-            target_emb = self.embedding_model.encode([source_map[citation_id]], convert_to_numpy=True)
-            direct_sim = float(cosine_similarity(sent_emb, target_emb)[0][0])
+            if source_texts:
+                sims = cosine_similarity(sent_emb, source_emb)[0]
+            else:
+                sims = np.array([])
+
+            direct_candidates = [
+                float(sim)
+                for idx, sim in enumerate(sims)
+                if source_ids[idx] == citation_id
+            ]
+            direct_sim = max(direct_candidates) if direct_candidates else 0.0
 
             if direct_sim >= 0.70:
                 passing += 1
                 continue
 
             suggested = None
-            if source_texts:
-                sims = cosine_similarity(sent_emb, source_emb)[0]
+            if sims.size > 0:
                 best_idx = int(np.argmax(sims))
                 suggested = source_ids[best_idx]
 
@@ -534,8 +557,7 @@ class EditorAgent:
         readability_clamped = min(max(readability_fre, 0.0), 100.0)
 
         metrics = {
-            "readability_fre": round(readability_fre, 2),
-            "readability_score": round(readability_clamped / 100.0, 4),
+            "readability_score": round(readability_clamped / 100.0, 2),
             "coverage_percentage": round(coverage_percentage, 2),
             "coverage_score": round(min(max(coverage_percentage, 0.0), 100.0) / 100.0, 4),
             "claim_density_percentage": round(claim_density_ratio * 100.0, 2),
@@ -662,7 +684,7 @@ def evaluation_agent_node(state: PipelineState) -> dict:
             f"Reason: {result['hard_reason']}",
             f"Factual Accuracy: {result['accuracy']['score']:.2f}/100",
             f"Citation Quality: {result['citation']['citation_score']:.2f}/100",
-            f"Readability (Flesch): {content_metrics['readability_fre']:.2f}",
+            f"Readability: {readability_score:.2f}/1.00",
             f"Coverage: {content_metrics['coverage_percentage']:.2f}%",
             f"Claim Density: {content_metrics['claim_density_percentage']:.2f}%",
         ]
@@ -693,7 +715,7 @@ def evaluation_agent_node(state: PipelineState) -> dict:
             concise_suggestions.append(
                 "Fix citation mapping so each sentence points to the most relevant source ID."
             )
-        if content_metrics.get("readability_fre", 100.0) < 45.0:
+        if readability_score < 0.45:
             concise_suggestions.append(
                 "Improve readability by shortening long sentences and removing redundant phrases."
             )
@@ -747,7 +769,7 @@ def evaluation_agent_node(state: PipelineState) -> dict:
             "scores": {
                 "accuracy": result["accuracy"]["score"],
                 "citation_quality": result["citation"]["citation_score"],
-                "readability": content_metrics["readability_fre"],
+                "readability": readability_score,
                 "coverage": content_metrics["coverage_percentage"],
                 "claim_density": content_metrics["claim_density_percentage"],
             },

@@ -1,0 +1,48 @@
+{
+  "metadata": {
+    "topic": "Wi-fi 7 vs Wi-fi 6E",
+    "persona": "Technical Journalist",
+    "word_count": 800,
+    "revision_count": 2,
+    "final_status": "NEEDS_REVISION"
+  },
+  "article": {
+    "title": "Wi-Fi 7 vs Wi-Fi 6E: A Technical Analysis",
+    "meta_description": "Wi-Fi 7 represents a significant technological advancement over Wi-Fi 6E.",
+    "content_md": "Wi-Fi 7 represents a significant technological advancement over Wi-Fi 6E. Introducing multi-link operation (MLO) and faster transmission rates while maintaining compatibility with the 6 GHz band. [3] This allows devices to connect to multiple Wi-Fi bands simultaneously. [1] Wi-Fi 7 offers significant technological advances over Wi-Fi 6E, including multi-link operation, faster transmission rates, wider channels, and improved latency, While maintaining compatibility with the 6 GHz band. From a performance perspective, Wi-Fi 7 addresses limitations in Wi-Fi 6E. [1] Including its access to less congested spectrum but with inherent limitations in managing multi-band connections and maximum data rates. [3] A key feature of Wi-Fi 7 is its use of 4096-QAM (4K-QAM) technology, Which enables each signal to carry 12 bits of data, a 20% increase compared to Wi-Fi 6's 10 bits. This enhancement in network efficiency is particularly beneficial in high-density environments and contributes to the significant speed increases seen in Wi-Fi 7. [2] In practical terms, In practical terms, In terms of speed, Wi-Fi 7 significantly outperforms Wi-Fi 6E, While Wi-Fi 6E offers a maximum speed of up to 9. 6 Gbps utilizing 160 MHz channels in the 6 GHz band. Wi-Fi 7 reaches speeds of up to 46 Gbps. [3] In practical terms, In practical terms, This dramatic increase is attributed to its support for 320 MHz channels and higher-order modulation (4096-QAM). The theoretical data rates are also boosted by 20% due to the upgrade from 1024-QAM in Wi-Fi 6E to 4096-QAM in Wi-Fi 7. [3] Practically, this translates to faster speeds when a strong signal is available. [1] Wi-Fi 7's MLO allows for simultaneous communication over multiple bands, ensuring faster and smoother data transfer. Its signals also carry 20% more data than Wi-Fi 6E's, guaranteeing ample performance and speeds. [2] In practical terms, In practical terms, Both Wi-Fi 6E and Wi-Fi 7 operate on the 2. The expanded channel width in Wi-Fi 7, doubling from 160 MHz to 320 MHz, acts like expanding a pipeline. [2] [3] Allowing more data to pass through at once. [1] This boost in throughput is particularly beneficial for bandwidth-heavy tasks such as 4K streaming and gaming when conditions are optimal. Wi-Fi 7 is designed to support immersive experiences like augmented, extended, and virtual reality, making it a significant leap in wireless connections. [1] It is suitable for large-scale IoT operations, complex home internet setups, and everyday business operations such as video conferences.",
+    "citations": [
+      "[1] https://ezeefiber.com/blog/wifi6e-vs-wifi7-differences/",
+      "[2] https://blog.eero.com/wifi-7-vs-wifi-6e/",
+      "[3] https://www.velocitymicro.com/blog/wi-fi-7-vs-6e/"
+    ]
+  },
+  "evaluation": {
+    "scores": {
+      "accuracy": 1.0,
+      "citation_quality": 0.8462,
+      "readability": 0.12,
+      "coverage": 1.0,
+      "claim_density": 1.0,
+      "factual": 1.0,
+      "seo": 0.8462
+    },
+    "status": "NEEDS_REVISION",
+    "remarks": [
+      "Decision: REWRITE_ACCURACY",
+      "Reason: Citation quality below threshold: 84.62 < 90.00",
+      "Factual Accuracy: 100.00/100",
+      "Citation Quality: 84.62/100",
+      "Readability: 0.12/1.00",
+      "Coverage: 100.00%",
+      "Claim Density: 100.00%"
+    ],
+    "rewrite_suggestions": [
+      "Fix citation mapping so each sentence points to the most relevant source ID.",
+      "Improve readability by shortening long sentences and removing redundant phrases."
+    ]
+  },
+  "research_summary": {
+    "total_claims": 7,
+    "total_sources": 7
+  }
+}

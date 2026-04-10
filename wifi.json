@@ -1,0 +1,50 @@
+{
+  "metadata": {
+    "topic": "Wi-fi 7 vs Wi-fi 6E",
+    "persona": "Technical Journalist",
+    "word_count": 800,
+    "revision_count": 2,
+    "final_status": "NEEDS_REVISION"
+  },
+  "article": {
+    "title": "Wi-Fi 7 vs Wi-Fi 6E: A Technical Comparison",
+    "meta_description": "Wi-Fi 7 represents a significant advancement over Wi-Fi 6E, introducing key features [2] that enhance performance and capabilities.",
+    "content_md": "Wi-Fi 7 represents a significant advancement over Wi-Fi 6E, introducing key features [2] that enhance performance and capabilities. [3] While both standards operate on the same spectrum bands (2.4 GHz, 5 GHz. [3] And 6 GHz), Wi-Fi 7 incorporates major technological upgrades . [3] A primary distinction lies in the theoretical maximum data rate. Wi-Fi 7 has a higher theoretical maximum data rate than Wi-Fi 6 and Wi-Fi 6E, with a rate of over 30 Gbps compared to 9.6 Gbps for Wi-Fi 6 and Wi-Fi 6E. [3] Which is significantly higher than the 9.6 Gbps limit set by Wi-Fi 6 and Wi-Fi 6E . [3] Wi-Fi 7 was officially standardized in 2024, distinguishing it from Wi-Fi 6 (launched in 2019) and Wi-Fi 6E (launched in 2021). [1] One such enhancement is Multi-Link Operation (MLO), a functionality that allows devices to connect to multiple Wi-Fi bands concurrently, thereby boosting speed and reliability. [1] Furthermore, Wi-Fi 7 introduces support for 320 MHz channels within the 6 GHz band. [3] This wider channel bandwidth enables multi-gigabit peak speeds and significantly reduces latency, making it particularly suitable for demanding applications such as 4K/8K streaming, gaming. [4] And virtual reality experiences . The improved wireless network speeds in Wi-Fi 7 are also attributed to its use of 4096-QAM (4K-QAM) technology. [4] Wi-Fi 7's 4096-QAM technology carries 12 bits of data, which is 20% more than Wi-Fi 6's 10 bits, resulting in improved wireless network speeds and performance. [4] Wi-Fi 7 has a higher theoretical maximum data rate than Wi-Fi 6 and Wi-Fi 6E, with a rate of over 30 Gbps compared to 9.6 Gbps for Wi-Fi 6 and Wi-Fi 6E. [3] Wi-Fi 7's 4096-QAM technology carries 12 bits of data, which is 20% more than Wi-Fi 6's 10 bits, resulting in improved wireless network speeds and performance. [4] In terms of latency and efficiency, Wi-Fi 7 incorporates technologies like Multi-RU (Resource Unit) and deterministic latency. [4] These advancements contribute to a more consistent user experience by reducing interference and ensuring predictable network behavior . The practical implications of these upgrades are substantial. For environments with numerous devices or those requiring rapid response times, such as busy offices in multi-story buildings, Wi-Fi 7 offers a significant performance. [4] Advantage . Wi-Fi 7 was officially standardized in 2024, distinguishing it from Wi-Fi 6 (launched in 2019) and Wi-Fi 6E (launched in 2021). [1] The comparison between Wi-Fi 6E and Wi-Fi 7 highlights the latter's superior capabilities for high-performance applications. [1] While both share some similarities in their spectrum usage, Wi-Fi 7's advancements make it a game-changer for users with demanding needs . [4] Wi-Fi 7's 4096-QAM technology carries 12 bits of data, which is 20% more than Wi-Fi 6's 10 bits, resulting in improved wireless network speeds and performance. [4] The technical specifications of Wi-Fi 7 are rooted in its adherence to the IEEE 802.11be standard. [3] Which serves as the foundation for this latest generation of Wi-Fi technology . Wi-Fi 7 was officially standardized in 2024, distinguishing it from Wi-Fi 6 (launched in 2019) and Wi-Fi 6E (launched in 2021). [1] In conclusion, Wi-Fi 7 offers a comprehensive set of features designed to enhance network performance, capacity. [3] And user experience. Wi-Fi 7's 4096-QAM technology carries 12 bits of data, which is 20% more than Wi-Fi 6's 10 bits, resulting in improved wireless network speeds and performance. [4] Wi-Fi 7 was officially standardized in 2024, distinguishing it from Wi-Fi 6 (launched in 2019) and Wi-Fi 6E (launched in 2021). [1] Wi-Fi 7's 4096-QAM technology carries 12 bits of data, which is 20% more than Wi-Fi 6's 10 bits, resulting in improved wireless network speeds and performance. [4] Devices . For users prioritizing future-proofing and exceptional network performance, Wi-Fi 7 emerges as the preferred choice . [3]",
+    "citations": [
+      "[1] https://www.fs.com/blog/wifi-6-vs-wifi-6e-vs-wifi-7-how-to-choose-36.html",
+      "[2] https://ezeefiber.com/blog/wifi6e-vs-wifi7-differences/",
+      "[3] https://www.techtarget.com/searchnetworking/tip/Wi-Fi-6-vs-Wi-Fi-6E-Spectrum-not-hype-is-key-difference",
+      "[4] https://blog.eero.com/wifi-7-vs-wifi-6e/"
+    ]
+  },
+  "evaluation": {
+    "scores": {
+      "accuracy": 0.925,
+      "citation_quality": 0.963,
+      "readability": 0.0,
+      "coverage": 1.0,
+      "claim_density": 0.8889,
+      "factual": 0.925,
+      "seo": 0.963
+    },
+    "status": "NEEDS_REVISION",
+    "remarks": [
+      "Decision: REWRITE_ACCURACY",
+      "Reason: Accuracy below threshold: 92.50 < 95.00",
+      "Factual Accuracy: 92.50/100",
+      "Citation Quality: 96.30/100",
+      "Readability: 0.00/1.00",
+      "Coverage: 100.00%",
+      "Claim Density: 88.89%"
+    ],
+    "rewrite_suggestions": [
+      "Clarify ambiguous statements with explicit, source-backed wording.",
+      "Fix citation mapping so each sentence points to the most relevant source ID.",
+      "Improve readability by shortening long sentences and removing redundant phrases."
+    ]
+  },
+  "research_summary": {
+    "total_claims": 7,
+    "total_sources": 7
+  }
+}

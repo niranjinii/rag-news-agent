@@ -1,0 +1,67 @@
+{
+  "research_data": {
+    "definitions": {
+      "Snapdragon 8+ Gen 1": "A high-performance mobile processor manufactured by Qualcomm, designed for flagship smartphones.",
+      "Snapdragon 7 Gen 3": "A mobile processor manufactured by Qualcomm, typically found in mid-range to upper-mid-range smartphones.",
+      "Snapdragon 8s Gen 4": "A mobile processor manufactured by Qualcomm, positioned for high-end smartphones with advanced performance capabilities."
+    },
+    "sources": [
+      {
+        "id": 1,
+        "subtopic": "Nothing Phone 2 vs Nothing Phone 3 technical specifications breakdown",
+        "extracted_claim": "The Nothing Phone 2 has a better camera setup than the Nothing Phone 3a, with dual 50MP rear cameras and a 32MP front camera, and supports 4K video at 60 fps, whereas the Phone 3a has a 50MP main camera, a 2MP depth sensor, and a 16MP front camera.",
+        "raw_chunk": "Is the Nothing Phone 2 better than the Nothing Phone 3a?  \nThe Nothing Phone 2 is a better option for users who want higher performance and more features. It comes with a faster processor, better cameras, and support for wireless charging. The Phone 3a, however, offers excellent value for money and is suitable for daily tasks and casual use. If you are looking for a more premium experience and do not mind spending more, the Phone 2 stands out. For budget buyers, the Phone 3a is still a strong choice.  \nWhich phone has a better camera, Nothing Phone 2 or Nothing Phone 3a?  \nThe Nothing Phone 2 clearly wins in the camera department. It offers dual 50MP rear cameras, including an ultrawide sensor, and a 32MP front camera for sharp selfies. It also supports 4K video at 60 fps. In comparison, the Phone 3a comes with a 50MP main camera and a 2MP depth sensor, with a 16MP front camera. While good for basic shots, the Phone 3a lacks the versatility and quality of the Phone 2’s setup.",
+        "url": "https://www.bajajfinserv.in/nothing-phone-3a-vs-nothing-phone-2"
+      },
+      {
+        "id": 1,
+        "subtopic": "Nothing Phone 2 vs Nothing Phone 3 technical specifications breakdown",
+        "extracted_claim": "The Nothing Phone 3a is priced at Rs. 28,999, while the Nothing Phone 2 starts at Rs. 39,999.",
+        "raw_chunk": "The Nothing Phone 3a is expected to be a more affordable option, ideal for budget-conscious users. It’s priced at around Rs. 28,999, offering good value for its features. On the other hand, the Nothing Phone 2 starts from Rs. 39,999 and delivers a premium experience with top-tier specs. Use the table below to quickly compare their prices and pick the one that best fits your budget and performance needs.Model | Expected starting price |\n| Nothing Phone 3a | Rs. 28,999 |\n| Nothing Phone 2 | Rs. 39,999 |  \nPrices and availability of the above smartphone models can vary across sellers. We recommend checking the official website for the most up-to-date information. You can also explore thelatest offerson smartphones through Bajaj Finserv to get value-packed deals and Easy EMIs.",
+        "url": "https://www.bajajfinserv.in/nothing-phone-3a-vs-nothing-phone-2"
+      },
+      {
+        "id": 1,
+        "subtopic": "Nothing Phone 2 vs Nothing Phone 3 technical specifications breakdown",
+        "extracted_claim": "The Nothing Phone 2 has better performance than the Nothing Phone 3a due to its Snapdragon 8+ Gen 1 processor, which handles gaming, multitasking, and demanding apps more efficiently.",
+        "raw_chunk": "Which phone offers better performance, the Nothing Phone 2 or Nothing Phone 3a?  \nThe Nothing Phone 2 is more powerful thanks to its Snapdragon 8+ Gen 1 processor. It handles gaming, multitasking, and demanding apps much better than the Snapdragon 7 Gen 3 chip in the Phone 3a. Both phones offer up to 12GB RAM, but the faster processor and better GPU in the Phone 2 give it an edge in overall speed. For heavy users and gamers, the Phone 2 is the clear winner. The Phone 3a suits lighter usage.  \nShow More\nShow Less",
+        "url": "https://www.bajajfinserv.in/nothing-phone-3a-vs-nothing-phone-2"
+      },
+      {
+        "id": 2,
+        "subtopic": "Nothing Phone 2 vs Nothing Phone 3 technical specifications breakdown",
+        "extracted_claim": "The Nothing Phone (3) is powered by Qualcomm Snapdragon 8s Gen 4, while the Nothing Phone (2) is powered by Qualcomm Snapdragon 8 Plus Gen 1.",
+        "raw_chunk": "Here we compared two flagship smartphones: the 6.67-inch Nothing Phone (3) (with Qualcomm Snapdragon 8s Gen 4) that was released on July 2, 2025, against the Nothing Phone (2), which is powered by Qualcomm Snapdragon 8 Plus Gen 1 and came out 2 years before. On this page, you will find tests, full specs, strengths, and weaknesses of each of the devices.  \nSelect the amount of RAM to evaluate performance and value for money more precisely",
+        "url": "https://nanoreview.net/en/phone-compare/nothing-phone-3-vs-nothing-phone-2"
+      },
+      {
+        "id": 1,
+        "subtopic": "Nothing Phone 2 vs Nothing Phone 3 technical specifications breakdown",
+        "extracted_claim": "The Nothing Phone 2 has a slightly larger 4,700 mAh battery compared to the Phone 3a’s 4,500 mAh battery, and it also supports wireless charging, which is not available in the Phone 3a.",
+        "raw_chunk": "You can shop on for the latest Nothing Phone on Easy EMIs using the Bajaj Finserv Insta EMI Card. Check your eligibility and preapproved limit in just a few simple steps and make the purchase easy on your pocket.  \nYou can shop on for the latest Nothing Phone on Easy EMIs using the Bajaj Finserv Insta EMI Card. Check your eligibility and preapproved limit in just a few simple steps and make the purchase easy on your pocket.  \nWhich phone offers better battery life, Nothing Phone 2 or Nothing Phone 3a?  \nThe Nothing Phone 2 has a slightly larger 4,700 mAh battery compared to the Phone 3a’s 4,500 mAh battery. Both phones offer fast 45 W wired charging, but only the Phone 2 supports wireless charging. In real-world usage, the difference in battery life may not be drastic, but the Phone 2 has a slight edge. If wireless charging matters to you, the Phone 2 is the better pick. For general use, both perform reliably through the day.",
+        "url": "https://www.bajajfinserv.in/nothing-phone-3a-vs-nothing-phone-2"
+      },
+      {
+        "id": 2,
+        "subtopic": "Nothing Phone 2 vs Nothing Phone 3 technical specifications breakdown",
+        "extracted_claim": "The Nothing Phone (3) has 50% more RAM (12GB) compared to the Nothing Phone (2) (8GB), and delivers 51% higher peak brightness (1499 nits against 991 nits).",
+        "raw_chunk": "Reasons to consider the Nothing Phone (3)  \n- The rear camera has a 3x optical zoom\n- 61% better performance in AnTuTu Benchmark (2306K versus 1436K)\n- Delivers 51% higher peak brightness (1499 against 991 nits)\n- Has 50% more RAM: 12GB versus 8GB\n- Newer Bluetooth version (v6.0)\n- Waterproof body (IP68 classification)\n- Compatible with the latest Wi-Fi 7 wireless networks\n- The phone is 2 years newer\n- More recent OS version: Android 16 versus 15\n- 17% higher pixel density (460 vs 394 PPI)\n- Supports higher wattage charging (65W versus 45W)\n- The front-facing camera can record video at 4K\n- Ready for eSIM technology  \nReasons to consider the Nothing Phone (2)  \n- Weighs 16.8 grams less",
+        "url": "https://nanoreview.net/en/phone-compare/nothing-phone-3-vs-nothing-phone-2"
+      },
+      {
+        "id": 1,
+        "subtopic": "Nothing Phone 2 vs Nothing Phone 3 technical specifications breakdown",
+        "extracted_claim": "The Nothing Phone 2 has a higher brightness at 1,600 nits compared to the Nothing Phone 3a at 1,200 nits.",
+        "raw_chunk": "| Display size | 6.7-inch AMOLED | 6.7-inch LTPO OLED |\n| Resolution | 1080 x 2412 pixel | 1080 x 2412 pixel |\n| Refresh rate | 120 Hz | 120 Hz |\n| Brightness | 1,200 nits | 1,600 nits |  \n##### Camera  \nThe Phone 2 shines with its dual 50MP rear setup and better front camera. The 3a simplifies things with fewer sensors but still covers the basics well.Feature | Nothing Phone 3a | Nothing Phone 2 |\n| Rear camera | 50MP (main) + 2MP (depth) | 50MP (main) + 50MP (ultrawide) |\n| Front camera | 16MP | 32MP |\n| Video recording | 4K at 30 fps | 4K at 60 fps |  \n##### Connectivity and network  \nBoth phones come with strong connectivity options, including 5G and NFC. The Nothing Phone 2 supports newer versions of Wi-Fi and Bluetooth for added speed.Feature | Nothing Phone 3a | Nothing Phone 2 |\n| 5G support | Yes | Yes |\n| Wi-Fi | Wi-Fi 6 | Wi-Fi 6E |\n| Bluetooth | Bluetooth 5.2 | Bluetooth 5.3 |\n| NFC | Yes | Yes |  \n##### Battery",
+        "url": "https://www.bajajfinserv.in/nothing-phone-3a-vs-nothing-phone-2"
+      },
+      {
+        "id": 1,
+        "subtopic": "Nothing Phone 2 vs Nothing Phone 3 technical specifications breakdown",
+        "extracted_claim": "The Nothing Phone 2 has a slightly higher battery capacity of 4,700 mAh compared to the Nothing Phone 3a's 4,500 mAh, and also supports 15 W wireless charging in addition to 45 W wired charging.",
+        "raw_chunk": "| Bluetooth | Bluetooth 5.2 | Bluetooth 5.3 |\n| NFC | Yes | Yes |  \n##### Battery  \nThe Phone 3a offers good battery life with fast wired charging. The Phone 2 goes a step further with slightly higher capacity and wireless charging support.Feature | Nothing Phone 3a | Nothing Phone 2 |\n| Battery capacity | 4,500 mAh | 4,700 mAh |\n| Charging | 45 W wired | 45 W wired, 15 W wireless |",
+        "url": "https://www.bajajfinserv.in/nothing-phone-3a-vs-nothing-phone-2"
+      }
+    ]
+  }
+}

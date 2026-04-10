@@ -1,0 +1,49 @@
+{
+  "metadata": {
+    "topic": "Wi-fi 7 vs Wi-fi 6E",
+    "persona": "Technical Journalist",
+    "word_count": 800,
+    "revision_count": 2,
+    "final_status": "NEEDS_REVISION"
+  },
+  "article": {
+    "title": "Wi-Fi 7 vs Wi-Fi 6E: A Technical Analysis",
+    "meta_description": "Wi-Fi 7 represents a significant technological advancement over Wi-Fi 6E, offering improved performance and capabilities for high-demand applications, While...",
+    "content_md": "Wi-Fi 7 represents a significant technological advancement over Wi-Fi 6E, offering improved performance and capabilities for high-demand applications, While Wi-Fi 6E upgraded standard Wi-Fi 6 by adding access to the 6 GHz band. Wi-Fi 7 reimagines wireless connectivity with key differences. These include multi-link operation (MLO), faster transmission rates, wider channels, and reduced latency. [1] MLO in Wi-Fi 7 allows devices to simultaneously connect across multiple bands. [1] 2. 4 GHz, 5 GHz, and 6 GHz. [3] This multi-band capability enhances connection reliability and speed compared to Wi-Fi 6E's single-band operation. [3] Specifically, it improves handling of high-demand traffic by supporting higher aggregate bandwidth when multiple devices are connected. [3] In terms of raw speed, Wi-Fi 7 significantly outperforms Wi-Fi 6E. [4] Wi-Fi 7 routers demonstrate consistently higher throughput, especially in the 5 GHz and 6 GHz bands. [3] Maximum single-device throughputs for Wi-Fi 7 reach up to 5400 Mbps at a 3m range, which is higher than Wi-Fi 6E's 4600 Mbps. [4] For multi-device scenarios, Wi-Fi 7 delivers a total bandwidth of 322 Gbps, while Wi-Fi 6E reaches 2. 4 Gbps. [3] [4] The improved handling of high-demand traffic in Wi-Fi 7 is further demonstrated by its support for higher aggregate bandwidth and lower. More stable latency compared to Wi-Fi 6E. [4] This makes Wi-Fi 7 more suitable for latency-sensitive applications such as video conferencing and online gaming. [3] The latency performance of Wi-Fi 7 is also a notable improvement. [4] In ping tests conducted under typical office conditions, Wi-Fi 7 showed lower and more stable latency across various distances from the router. [3] At 3m, 5m, and 10m ranges, Wi-Fi 7's latency was measured at 2ms, 3ms, and 5ms respectively. [4] Wi-Fi 7 offers significantly higher maximum speeds than Wi-Fi 6E, reaching up to 46 Gbps compared to Wi-Fi 6E's 9. 6 Gbps. [4] [3] Furthermore, Wi-Fi 7 introduces support for 320 MHz channels in the 6 GHz band. This wider channel width enables multi-gigabit peak speeds and lower latency on compatible devices, making it ideal for fiber or multi-gig plans. [3] Wi-Fi 7 also utilizes 4096-QAM (4K-QAM) technology, which carries 12 bits of data per signal. [2] This represents a 20% increase over Wi-Fi 6's 10 bits, resulting in improved wireless network speeds and performance. [2] The combination of MLO, faster transmission rates, wider channels, And improved latency in Wi-Fi 7 positions it as a superior choice for environments requiring high performance. [2] Such as busy offices with many devices or those needing fast response times. [3] Gamers and VR enthusiasts will particularly benefit from Wi-Fi 7's capabilities due to its ultralow latency. In summary, Wi-Fi 7 offers substantial improvements in speed, capacity, and latency compared to Wi-Fi 6E. [2] Its advanced features make it a game-changer for users with high-performance needs, supporting large-scale IoT operations, complex home internet setups, And demanding business applications like video conferencing.",
+    "citations": [
+      "[1] https://ezeefiber.com/blog/wifi6e-vs-wifi7-differences/",
+      "[2] https://blog.eero.com/wifi-7-vs-wifi-6e/",
+      "[3] https://www.velocitymicro.com/blog/wi-fi-7-vs-6e/",
+      "[4] https://www.zbtwifi.com/blogs/frontier-technology-news/wi-fi-7-vs-wi-fi-6e-real-world-performance-comparison?srsltid=AfmBOoqSeYKfOmSWECWBcsrsF-VfndaDWVoHOxKcFOU0JDqp2EXNQleb"
+    ]
+  },
+  "evaluation": {
+    "scores": {
+      "accuracy": 0.75,
+      "citation_quality": 1.0,
+      "readability": 0.0,
+      "coverage": 1.0,
+      "claim_density": 1.0,
+      "factual": 0.75,
+      "seo": 1.0
+    },
+    "status": "NEEDS_REVISION",
+    "remarks": [
+      "Decision: REWRITE_ACCURACY",
+      "Reason: Accuracy below threshold: 75.00 < 95.00",
+      "Factual Accuracy: 75.00/100",
+      "Citation Quality: 100.00/100",
+      "Readability: 0.00/1.00",
+      "Coverage: 100.00%",
+      "Claim Density: 100.00%"
+    ],
+    "rewrite_suggestions": [
+      "Remove or re-cite unsupported numeric metrics not present in research sources.",
+      "Improve readability by shortening long sentences and removing redundant phrases."
+    ]
+  },
+  "research_summary": {
+    "total_claims": 7,
+    "total_sources": 7
+  }
+}

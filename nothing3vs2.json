@@ -1,0 +1,48 @@
+{
+  "metadata": {
+    "topic": "Nothing 3 vs Nothing 2 Specifications",
+    "persona": "Technical Journalist",
+    "word_count": 800,
+    "revision_count": 2,
+    "final_status": "NEEDS_REVISION"
+  },
+  "article": {
+    "title": "Nothing Phone 2 vs Nothing Phone 3 Technical Specifications Comparison",
+    "meta_description": "The Nothing Phone 2 is equipped with a Snapdragon 8+ Gen 1 processor, While the Nothing Phone (3) utilizes a Qualcomm Snapdragon 8s Gen 4 chip.",
+    "content_md": "The Nothing Phone 2 is equipped with a Snapdragon 8+ Gen 1 processor, While the Nothing Phone (3) utilizes a Qualcomm Snapdragon 8s Gen 4 chip. The superior performance of the Nothing Phone 2 stems from its faster processor, Which excels at handling demanding applications and multitasking tasks compared to the Snapdragon 7 Gen 3 found in the Nothing Phone 3a. [2] In practical terms, In practical terms, Both devices support up to 12GB of RAM, But the Phone 2's processor provides a significant edge in overall speed. Making it more suitable for heavy users and gamers. [1] In contrast, the Nothing Phone 3a is better suited for lighter usage. Display specifications reveal notable differences. [1] The Nothing Phone 2 boasts a higher brightness of 1, 600 nits compared to the Nothing Phone 3a's 1, 200 nits. Furthermore, the Nothing Phone (3) features 50% more RAM than the Nothing Phone 2, with 12GB available against the Phone 2's 8GB. [1] The camera systems on both devices differ significantly. [1] The Nothing Phone 2 is equipped with dual 50MP rear cameras and a 32MP front camera for sharp selfies. In comparison, the Nothing Phone 3a features a 50MP main camera and a 2MP depth sensor for its rear cameras. [1] With a 16MP front camera. [1] The Nothing Phone 2 has a better camera setup than the Nothing Phone 3a, with dual 50MP rear cameras and a 32MP front camera, And supports 4K video at 60 fps, whereas the Phone 3a has a 50MP main camera, a 2MP depth sensor. It lacks the versatility and quality of the Phone 2's dual-camera arrangement, In terms of battery capacity. [1] In practical terms, The Nothing Phone 2 has a slightly larger 4. 700 mAh battery compared to the Nothing Phone 3a's 4, 500 mAh battery. In practical terms, Both phones support fast wired charging at 45 W, but only the Nothing Phone 2 also offers wireless charging capabilities. [1] In practical terms, The Nothing Phone 2 supports up to 15 W wireless charging in addition to its 45 W wired charging. Connectivity options also show variations. [1] The Nothing Phone 2 features Wi-Fi 6E and Bluetooth 5. 0. [1] In contrast, the Nothing Phone (3) supports the latest Wi-Fi 7 wireless networks and has a newer Bluetooth version, v6. In practical terms, In practical terms, Considering these technical specifications, the Nothing Phone (3) presents several advantages, including its higher RAM capacity. Superior AnTuTu Benchmark score, And enhanced peak brightness, However, the Nothing Phone 2 offers a compelling package with its faster processor, dual-camera setup, And support for wireless charging. In practical terms, The differences in battery life between the two phones may not be drastic, But the Phone 2's slightly larger capacity and wireless charging support provide a slight edge. [2] [1] In practical terms, For users prioritizing wireless charging capabilities, the Nothing Phone 2 is the more suitable choice.",
+    "citations": [
+      "[1] https://www.bajajfinserv.in/nothing-phone-3a-vs-nothing-phone-2",
+      "[2] https://nanoreview.net/en/phone-compare/nothing-phone-3-vs-nothing-phone-2"
+    ]
+  },
+  "evaluation": {
+    "scores": {
+      "accuracy": 0.8,
+      "citation_quality": 0.7692,
+      "readability": 0.25,
+      "coverage": 1.0,
+      "claim_density": 1.0,
+      "factual": 0.8,
+      "seo": 0.7692
+    },
+    "status": "NEEDS_REVISION",
+    "remarks": [
+      "Decision: REWRITE_ACCURACY",
+      "Reason: Accuracy below threshold: 80.00 < 95.00",
+      "Factual Accuracy: 80.00/100",
+      "Citation Quality: 76.92/100",
+      "Readability: 0.25/1.00",
+      "Coverage: 100.00%",
+      "Claim Density: 100.00%"
+    ],
+    "rewrite_suggestions": [
+      "Clarify ambiguous statements with explicit, source-backed wording.",
+      "Fix citation mapping so each sentence points to the most relevant source ID.",
+      "Improve readability by shortening long sentences and removing redundant phrases."
+    ]
+  },
+  "research_summary": {
+    "total_claims": 8,
+    "total_sources": 8
+  }
+}

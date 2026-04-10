@@ -28,7 +28,7 @@
     "scores": {
       "accuracy": 0.7234,
       "citation_quality": 0.2222,
-      "readability": 0.329,
+      "readability": 0.33,
       "coverage": 0.7273,
       "claim_density": 0.8529,
       "factual": 0.7234,
@@ -40,7 +40,7 @@
       "Reason: Accuracy below threshold: 72.34 < 95.00",
       "Factual Accuracy: 72.34/100",
       "Citation Quality: 22.22/100",
-      "Readability (Flesch): 32.90",
+      "Readability: 0.33/1.00",
       "Coverage: 72.73%",
       "Claim Density: 85.29%"
     ],

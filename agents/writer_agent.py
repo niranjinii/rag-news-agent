@@ -60,17 +60,28 @@ def _build_agent1_payload_from_state(state: PipelineState) -> Dict[str, Any]:
 	research_data = state.get("research_data") or {}
 	definitions = research_data.get("definitions") if isinstance(research_data, dict) else {}
 	sources = research_data.get("sources") if isinstance(research_data, dict) else []
+	evaluation = state.get("evaluation") or {}
 
 	if not isinstance(definitions, dict):
 		definitions = {}
 	if not isinstance(sources, list):
 		sources = []
 
+	revision_feedback: List[str] = []
+	if isinstance(evaluation, dict):
+		rewrite_suggestions = evaluation.get("rewrite_suggestions") or []
+		remarks = evaluation.get("remarks") or []
+		if isinstance(rewrite_suggestions, list):
+			revision_feedback.extend([str(item).strip() for item in rewrite_suggestions if str(item).strip()])
+		if isinstance(remarks, list):
+			revision_feedback.extend([str(item).strip() for item in remarks[:4] if str(item).strip()])
+
 	return {
 		"research_data": {
 			"topic": _build_topic_with_revision_context(state),
 			"definitions": definitions,
 			"sources": sources,
+			"revision_feedback": revision_feedback,
 		}
 	}
 

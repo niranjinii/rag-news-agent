@@ -243,6 +243,9 @@ app.invoke(None, config={"configurable": {"thread_id": "thread_123"}})
   "remarks": [...],
   "rewrite_suggestions": [...]
 }
+
+`scores.readability` is normalized to `0.0-1.0` and rounded to 2 decimals.
+Readability is reported on this normalized scale throughout pipeline outputs.
 ```
 **💾 Checkpoint saved automatically after completion**
 

@@ -1,0 +1,53 @@
+{
+  "research_data": {
+    "definitions": {
+      "KV cache quantization": "A technique that compresses the key-value cache in neural networks to reduce memory usage and potentially speed up inference.",
+      "QJL algorithm": "A specific algorithm used in data compression, likely related to random rotations and quantization, to improve accuracy and reduce bias.",
+      "recall ratios": "A metric used in information retrieval and search systems to measure the proportion of relevant items that are successfully retrieved out of the total number of relevant items."
+    },
+    "sources": [
+      {
+        "id": 1,
+        "subtopic": "Google TurboQuant technical specifications",
+        "extracted_claim": "TurboQuant achieves a 5x reduction in raw storage by compressing 16-bit floating point values down to 3 bits while maintaining model accuracy statistically indistinguishable from full precision.",
+        "raw_chunk": "TurboQuant is a post-training quantization algorithm developed by researchers at Google DeepMind specifically targeting the KV cache. Its goal is to compress the 16-bit floating point values stored in the KV cache down to just 3 bits — roughly a 5x reduction in raw storage — while maintaining model accuracy that’s statistically indistinguishable from full precision.  \nThe “Turbo” in TurboQuant refers to its practical speed: unlike some quantization methods that save memory in theory but introduce overhead in practice, TurboQuant is designed to be hardware-efficient on real GPUs, particularly NVIDIA H100s.",
+        "url": "https://www.mindstudio.ai/blog/what-is-google-turboquant-kv-cache-compression/"
+      },
+      {
+        "id": 2,
+        "subtopic": "Google TurboQuant algorithm whitepaper",
+        "extracted_claim": "TurboQuant allows for building and querying large vector indices with minimal memory and near-zero preprocessing time, enabling faster and more efficient semantic search.",
+        "raw_chunk": "Techniques like TurboQuant are critical for this mission. They allow for building and querying large vector indices with minimal memory, near-zero preprocessing time, and state-of-the-art accuracy. This makes semantic search at Google's scale faster and more efficient. As AI becomes more integrated into all products, from LLMs to semantic search, this work in fundamental vector quantization will be more critical than ever.",
+        "url": "https://research.google/blog/turboquant-redefining-ai-efficiency-with-extreme-compression/"
+      },
+      {
+        "id": 2,
+        "subtopic": "Google TurboQuant algorithm whitepaper",
+        "extracted_claim": "TurboQuant uses a two-stage compression process, starting with random rotation of data vectors and application of a high-quality quantizer, followed by a QJL algorithm stage that uses 1 bit to eliminate bias and improve accuracy.",
+        "raw_chunk": "*High-quality compression (the PolarQuant method)*: TurboQuant starts by randomly rotating the data vectors. This clever step simplifies the data's geometry, making it easy to apply a standard, high-quality quantizer (a tool that maps a large set of continuous values, like precise decimals, to a smaller, discrete set of symbols or numbers, like integers: examples include audio quantization and jpeg compression) to each part of the vector individually. This first stage uses most of the compression power (the majority of the bits) to capture the main concept and strength of the original vector.*Eliminating hidden errors*: TurboQuant uses a small, residual amount of compression power (just 1 bit) to apply the QJL algorithm to the tiny amount of error left over from the first stage. The QJL stage acts as a mathematical error-checker that eliminates bias, leading to a more accurate attention score.",
+        "url": "https://research.google/blog/turboquant-redefining-ai-efficiency-with-extreme-compression/"
+      },
+      {
+        "id": 2,
+        "subtopic": "Google TurboQuant algorithm whitepaper",
+        "extracted_claim": "TurboQuant consistently achieves superior recall ratios compared to state-of-the-art methods (PQ and RabbiQ) in high-dimensional vector search tasks, as measured by the 1@k recall ratio.",
+        "raw_chunk": "This makes it ideal for supporting use cases like vector search where it dramatically speeds up index building process. We evaluated TurboQuant's efficacy in high-dimensional vector search against state-of-the-art methods (PQ and RabbiQ) using the 1@k recall ratio, which measures how frequently the algorithm captures the true top inner product result within its top-k approximations. TurboQuant consistently achieves superior recall ratios compared to baseline methods, despite those baselines utilizing inefficient large codebooks and dataset-specific tuning (figure below). This confirms TurboQuant's robustness and efficiency for high-dimensional search tasks.",
+        "url": "https://research.google/blog/turboquant-redefining-ai-efficiency-with-extreme-compression/"
+      },
+      {
+        "id": 2,
+        "subtopic": "Google TurboQuant algorithm whitepaper",
+        "extracted_claim": "TurboQuant delivers near-optimal distortion rates in a data-oblivious manner and operates with the efficiency of a 3-bit system while maintaining the precision of much heavier models.",
+        "raw_chunk": "TurboQuant demonstrates a transformative shift in high-dimensional search. By setting a new benchmark for achievable speed, it delivers near-optimal distortion rates in a data-oblivious manner. This allows our nearest neighbor engines to operate with the efficiency of a 3-bit system while maintaining the precision of much heavier models. See the paper for more details.",
+        "url": "https://research.google/blog/turboquant-redefining-ai-efficiency-with-extreme-compression/"
+      },
+      {
+        "id": 2,
+        "subtopic": "Google TurboQuant algorithm whitepaper",
+        "extracted_claim": "TurboQuant is a fundamental algorithmic contribution backed by strong theoretical proofs and operates near theoretical lower bounds, making it robust and trustworthy for critical, large-scale systems.",
+        "raw_chunk": "TurboQuant, QJL, and PolarQuant are more than just practical engineering solutions; they’re fundamental algorithmic contributions backed by strong theoretical proofs. These methods don't just work well in real-world applications; they are provably efficient and operate near theoretical lower bounds. This rigorous foundation is what makes them robust and trustworthy for critical, large-scale systems.  \nWhile a major application is solving the key-value cache bottleneck in models like Gemini, the impact of efficient, online vector quantization extends even further. For example, modern search is evolving beyond just keywords to understand intent and meaning. This requires vector search — the ability to find the \"nearest\" or most semantically similar items in a database of billions of vectors.",
+        "url": "https://research.google/blog/turboquant-redefining-ai-efficiency-with-extreme-compression/"
+      }
+    ]
+  }
+}
