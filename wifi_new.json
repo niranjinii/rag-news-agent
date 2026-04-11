@@ -8,42 +8,42 @@
   },
   "article": {
     "title": "Wi-Fi 7 vs Wi-Fi 6E: A Technical Comparison",
-    "meta_description": "Wi-Fi 7 represents a significant advancement over Wi-Fi 6E.",
-    "content_md": "Wi-Fi 7 represents a significant advancement over Wi-Fi 6E. Introducing Multi-Link Operation (MLO) and higher-order modulation schemes to enhance throughput and reduce latency, While Wi-Fi 6E expanded upon standard Wi-Fi 6 by adding access to the 6 GHz band. [2] In practical terms, In practical terms, Wi-Fi 7 redefines wireless connectivity with its ability to utilize multiple frequency bands simultaneously for a device. Wi-Fi 7 offers significant upgrades over Wi-Fi 6E, including multi-link operation, faster transmission rates, wider channels, and improved latency. [2] In practical terms, Wi-Fi 7 has a maximum speed of up to 46 Gbps. Compared to Wi-Fi 6E's maximum speed of up to 9. 6 Gbps. This Multi-Link Operation allows devices to leverage multiple channels concurrently. [1] [2] A substantial improvement over previous Wi-Fi versions limited to using only one band at a time. This capability is akin to upgrading from a single-lane road to a three-lane highway. Enabling data to travel across all available channels simultaneously rather than being confined to just one. The raw speed advantage is evident, with Wi-Fi 7 significantly outperforming Wi-Fi 6E. [2] In practical terms, In practical terms, Firstly, Wi-Fi 7 supports wider channels. Doubling the maximum channel width from 160 MHz in Wi-Fi 6E to 320 MHz. This expansion allows for more data to be transmitted at once. [2] [1] Leading to faster performance in bandwidth-intensive tasks such as 4K streaming and large file downloads when conditions are optimal. Secondly, Wi-Fi 7 adopts a higher-order modulation scheme called 4096-QAM. [1] In practical terms, In practical terms, In contrast, Wi-Fi 6E employs 1024-QAM. The advancement to 4096-QAM enables each symbol to carry 12 bits of data, compared to 10 bits for 1024-QAM in Wi-Fi 6E. [2] In practical terms, In practical terms, This results in an approximate 20% increase in data throughput for Wi-Fi 7 compared to Wi-Fi 6E. Furthermore, Wi-Fi 7 enhances network efficiency and performance by doubling the capacity of Wi-Fi 6E, While Wi-Fi 6E supports up to 8×8 Multi-User Multiple Input Multiple Output (MU-MIMO). [2] In practical terms, Wi-Fi 7 increases this capability to up to 16×16 MU-MIMO. Operationally, Operationally, this doubled capacity significantly improves the network's ability to efficiently transmit data to multiple devices simultaneously, especially in high-density environments. [2] From a performance perspective, These include 4K/8K streaming, virtual reality, and online gaming, Which can now benefit from significantly faster speeds and reduced latency provided by Wi-Fi 7. In practical terms, In summary, Wi-Fi 7 offers a substantial upgrade over Wi-Fi 6E with its Multi-Link Operation feature. [2] Operationally, Higher speed capabilities, wider channels, And enhanced network efficiency through increased MU-MIMO capacity.",
+    "meta_description": "Wi-Fi 7 represents a significant advancement over Wi-Fi 6E, introducing key technological enhancements that improve performance and capacity, While Wi-Fi 6E...",
+    "content_md": "Wi-Fi 7 represents a significant advancement over Wi-Fi 6E, introducing key technological enhancements that improve performance and capacity, While Wi-Fi 6E expanded upon standard Wi-Fi 6 by adding access to the 6 GHz band. In practical terms, Wi-Fi 7 redefines wireless connectivity with multi-link operation, faster transmission rates, wider channels, and reduced latency. [2] In practical terms, Wi-Fi 7 was officially standardized in 2024. Distinguishing it from Wi-Fi 6 (2019) and Wi-Fi 6E (2021) by its later launch date. In practical terms, Wi-Fi 7 supports up to 320MHz channels, which is twice the width of the 160MHz channels used in previous generations. [2] [1] This expansion enables significantly higher data transfer rates. [3] Furthermore, Wi-Fi 7 implements 4K-QAM (Quadrature Amplitude Modulation), a modulation scheme that encodes more data per symbol compared to lower-order schemes like 1024-QAM. This technical improvement allows for a 20% increase in theoretical data rates, translating to faster speeds when signal strength is adequate. [2] In practical terms, In practical terms, In terms of multi-user capabilities. Wi-Fi 7 doubles the capacity of Wi-Fi 6E by supporting up to 16×16 MU-MIMO. This contrasts with Wi-Fi 6E's limitation of up to 8×8 MU-MIMO, enhancing network efficiency and performance, particularly in high-density environments. [2] [3] In practical terms, In practical terms, The maximum speed of Wi-Fi 7 is up to 46 Gbps. A substantial increase compared to Wi-Fi 6E's maximum speed of up to 9. 6 Gbps. [3] Both standards support the 2. Wi-Fi 7 has a maximum speed of up to 46 Gbps, compared to Wi-Fi 6E's maximum speed of up to 9. With Wi-Fi 7 maintaining compatibility with the 6 GHz band while offering superior performance. [3] In practical terms, In practical terms, Wi-Fi 7 is designed to provide improved latency for real-time applications. Building upon the low-latency capabilities already present in Wi-Fi 6E. For users experiencing consistent buffering or latency issues, a Wi-Fi 7 wireless access point may offer a superior solution, , In practical terms. [2] [3], In practical terms. The increased theoretical data rates and reduced latency in Wi-Fi 7 contribute to faster and more stable connections for demanding applications like gaming and streaming. The enhanced multi-link operation and wider channel support further solidify Wi-Fi 7's position as a supercharged version of Wi-Fi 6E.",
     "citations": [
-      "[1] https://ezeefiber.com/blog/wifi6e-vs-wifi7-differences/",
-      "[2] https://www.velocitymicro.com/blog/wi-fi-7-vs-6e/"
+      "[1] https://www.fs.com/blog/wifi-6-vs-wifi-6e-vs-wifi-7-how-to-choose-36.html",
+      "[2] https://ezeefiber.com/blog/wifi6e-vs-wifi7-differences/",
+      "[3] https://www.velocitymicro.com/blog/wi-fi-7-vs-6e/"
     ]
   },
   "evaluation": {
     "scores": {
-      "accuracy": 0.8154,
-      "citation_quality": 0.5,
-      "readability": 0.21,
+      "accuracy": 0.9539,
+      "citation_quality": 0.7273,
+      "readability": 0.27,
       "coverage": 1.0,
-      "claim_density": 0.8667,
-      "factual": 0.8154,
-      "seo": 0.5
+      "claim_density": 0.9286,
+      "factual": 0.9539,
+      "seo": 0.7273
     },
     "status": "NEEDS_REVISION",
     "remarks": [
       "Decision: REWRITE_ACCURACY",
-      "Reason: Accuracy below threshold: 81.54 < 95.00",
-      "Factual Accuracy: 81.54/100",
-      "Citation Quality: 50.00/100",
-      "Readability: 0.21/1.00",
+      "Reason: Citation quality below threshold: 72.73 < 90.00",
+      "Factual Accuracy: 95.39/100",
+      "Citation Quality: 72.73/100",
+      "Readability: 0.27/1.00",
       "Coverage: 100.00%",
-      "Claim Density: 86.67%"
+      "Claim Density: 92.86%"
     ],
     "rewrite_suggestions": [
-      "Rewrite low-support claims to closely match source evidence and keep inline citations.",
       "Clarify ambiguous statements with explicit, source-backed wording.",
       "Fix citation mapping so each sentence points to the most relevant source ID.",
       "Improve readability by shortening long sentences and removing redundant phrases."
     ]
   },
   "research_summary": {
-    "total_claims": 9,
-    "total_sources": 9
+    "total_claims": 6,
+    "total_sources": 6
   }
 }

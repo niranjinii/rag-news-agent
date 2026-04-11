@@ -1,0 +1,49 @@
+{
+  "metadata": {
+    "topic": "USB4 v2 vs Thunderbolt 5",
+    "persona": "Technical Journalist",
+    "word_count": 800,
+    "revision_count": 2,
+    "final_status": "NEEDS_REVISION"
+  },
+  "article": {
+    "title": "USB4 v2 vs Thunderbolt 5: A Technical Analysis",
+    "meta_description": "USB4 requires a minimum of 7.",
+    "content_md": "USB4 requires a minimum of 7. 5W power output, while Thunderbolt 5 requires a minimum of 140W. In practical terms, Thunderbolt 5 has a minimum mandatory speed of 80 Gbit/s, whereas USB4 V2. 0 only mandates 20 Gbit/s. With optional speeds up to 80 Gbit/s. In practical terms, Although Thunderbolt 5 also supports asymmetrical speeds up to 120 Gbit/s for display transmissions. [2] [1] In practical terms, In practical terms, In terms of power delivery, Thunderbolt 5 is designed to support significantly higher wattage than USB4 V2. 0, While USB4 V2. 0 relies on the USB Type-C specification and requires a Downstream Facing Port (DFP) to supply at least 7. 5 W Type-C current. Thunderbolt 5 demands a minimum charging power of 140W, a substantial increase from Thunderbolt 4's 100W, In practical terms. [1] [2], In practical terms. This enhanced power delivery capability in Thunderbolt 5 is achieved through its adoption of the latest USB Power Delivery protocol via USB Extended Power Range (EPR). Making it suitable for charging more demanding devices and future-proofing setups with high-power standards. [2] In contrast, USB4 V2. 0 supports a maximum of 25 watts natively, but can reach up to 240 watts when using USB Power Delivery. The adoption of EPR in Thunderbolt 5 enables it to support higher power output capabilities compared to USB4 V2. 0. [1] [2] In practical terms, Both technologies leverage the USB-C connector and are designed for efficient charging solutions, catering to users with power-hungry gadgets, 0 in 2024. With Intel not charging license fees for the use of Thunderbolt technology, However. [2] Manufacturers must still have their devices certified in a laboratory to use the Thunderbolt logo. May be able to cope with the data rate of Thunderbolt 5, And that Thunderbolt 4 will not be rendered obsolete by the new version. This ensures continuity for devices outside of the high-end market segment. [1] Thunderbolt 5's mandatory minimum speed is higher, And its power delivery capabilities are significantly more robust due to its adoption of advanced USB Power Delivery protocols via EPR. This makes Thunderbolt 5 a more powerful option for users requiring high-bandwidth data transfers and substantial power delivery for their devices. [2] In practical terms, For users with power-hungry gadgets, , In contrast, USB4 V2. Although it can reach higher powers with USB Power Delivery. [2] This makes USB4 V2. 0 a more accessible option for general users who do not require the extreme power delivery or high-speed data transfer capabilities of Thunderbolt 5. Based on the evidence provided. [2] A recommendation can be made that Thunderbolt 5 is the superior choice for users demanding high-bandwidth data transfers and robust power delivery, While USB4 V2.",
+    "citations": [
+      "[1] https://www.digitec.ch/en/page/thunderbolt-5-is-complete-and-slightly-better-than-usb4-v20-29555",
+      "[2] https://www.cablematters.com/Blog/Thunderbolt/thunderbolt-5-vs-usb4?srsltid=AfmBOoqnZijUGoCSU8so_VFTxgn8YjTXGYu4CNZPpxpxTk43js49jdLY"
+    ]
+  },
+  "evaluation": {
+    "scores": {
+      "accuracy": 0.5077,
+      "citation_quality": 0.8333,
+      "readability": 0.22,
+      "coverage": 1.0,
+      "claim_density": 1.0,
+      "factual": 0.5077,
+      "seo": 0.8333
+    },
+    "status": "NEEDS_REVISION",
+    "remarks": [
+      "Decision: REWRITE_ACCURACY",
+      "Reason: Accuracy below threshold: 50.77 < 95.00",
+      "Factual Accuracy: 50.77/100",
+      "Citation Quality: 83.33/100",
+      "Readability: 0.22/1.00",
+      "Coverage: 100.00%",
+      "Claim Density: 100.00%"
+    ],
+    "rewrite_suggestions": [
+      "Remove or re-cite unsupported numeric metrics not present in research sources.",
+      "Clarify ambiguous statements with explicit, source-backed wording.",
+      "Fix citation mapping so each sentence points to the most relevant source ID.",
+      "Improve readability by shortening long sentences and removing redundant phrases."
+    ]
+  },
+  "research_summary": {
+    "total_claims": 4,
+    "total_sources": 4
+  }
+}

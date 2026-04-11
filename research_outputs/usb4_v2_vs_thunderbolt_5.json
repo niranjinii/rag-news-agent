@@ -1,0 +1,40 @@
+{
+  "research_data": {
+    "definitions": {
+      "Bandwidth Boost": "A technology that allows for increased data transfer speeds beyond the standard rate.",
+      "USB Extended Power Range (EPR)": "An extension of the USB Power Delivery specification that enables significantly higher power output capabilities.",
+      "bidirectional": "Pertaining to data transfer that can occur in both directions simultaneously or independently.",
+      "asymmetrical": "Describing a data transfer configuration where the speeds or capabilities in one direction differ from the other."
+    },
+    "sources": [
+      {
+        "id": 1,
+        "subtopic": "USB4 v2 vs Thunderbolt 5 performance benchmarks",
+        "extracted_claim": "Thunderbolt 5 has a minimum mandatory speed of 80 Gbit/s, whereas USB4 V2.0 only mandates 20 Gbit/s, with optional speeds up to 80 Gbit/s.",
+        "raw_chunk": "Intel has unveiled Thunderbolt 5. The latest version of the port with USB-C connector will be available from 2024. The speed: up to 80 gigabits per second with a bidirectional connection. Up to 120 gigabits per second are possible for display transmissions.  \nSince the third version was released in 2015, the Thunderbolt connection has had a maximum gross speed of 40 gigabits per second (Gbit/s). This is now changing with Thunderbolt 5, which enables data transfers of up to 80 Gbit/s. This brings Thunderbolt into line with USB4 V2.0, whose technology and the USB-C connection are the same. However, the difference is that with USB, optional features are mandatory with Thunderbolt: With USB4 V2.0, the 80 Gbit/s is not mandatory, only 20 Gbit/s. With the fifth Thunderbolt version, Intel stipulates 80 Gbit/s as the minimum value. As well as a mandatory 140 watts for the power supply. Up to 240 watts are even possible as an option.",
+        "url": "https://www.digitec.ch/en/page/thunderbolt-5-is-complete-and-slightly-better-than-usb4-v20-29555"
+      },
+      {
+        "id": 2,
+        "subtopic": "USB4 v2 vs Thunderbolt 5 performance benchmarks",
+        "extracted_claim": "USB4 requires a minimum of 7.5W power output, while Thunderbolt 5 requires a minimum of 140W.",
+        "raw_chunk": "Unlike Thunderbolt 5, the USB4 specification does not explicitly demand power output levels. Instead, it relies on the USB Type-C specification, which underpins all USB, VESA, and other standards using the USB-C connector. This requires a USB4 Downstream Facing Port (DFP) to supply at least 7.5W Type-C current. Thunderbolt 5, however, requires a minimum charging power of 140W, compared to 100W with Thunderbolt 4, making it ideal for charging more demanding devices and future-proofing setups with the highest power standards. These enhanced features make both technologies suitable for users seeking efficient charging solutions for their devices.",
+        "url": "https://www.cablematters.com/Blog/Thunderbolt/thunderbolt-5-vs-usb4?srsltid=AfmBOoqnZijUGoCSU8so_VFTxgn8YjTXGYu4CNZPpxpxTk43js49jdLY"
+      },
+      {
+        "id": 1,
+        "subtopic": "USB4 v2 vs Thunderbolt 5 performance benchmarks",
+        "extracted_claim": "Thunderbolt 5 has a maximum gross speed of 80 Gbit/s bidirectional and 120 Gbit/s asymmetrical, while USB4 V2.0 has a maximum gross speed of 80 Gbit/s. Additionally, Thunderbolt 5 supports up to 240 watts of power supply, whereas USB4 V2.0 supports 25 watts or up to 240 watts with USB Power Delivery.",
+        "raw_chunk": "Intel still does not charge licence fees for the use of Thunderbolt. However, manufacturers who wish to use the Thunderbolt logo must have their devices certified in a laboratory. As far as old cables are concerned, Intel believes that a Thunderbolt 4 cable under one metre in length will be able to cope with the data rate of Thunderbolt 5. Incidentally, Thunderbolt 4 will not be rendered obsolete by the new version and will continue to exist for devices outside of the upper class.  \nThe launch of the fifth Thunderbolt version is expected to coincide with the launch of USB4 V2.0 in 2024. Until then, you can study the speed and power supply in the version comparison:  \nStandard | Year of publication | Max. Gross speed | Max. Power supply |\n|---|---|---|---|\n| Thunderbolt 5 | 2024 | 80 Gbit/s bidirectional, 120 Gbit/s asymmetrical | 240 watts, supports USB Power Delivery |\n| USB4 V2.0 (Gen 4) | 2024 | 80 Gbit/s | 25 watts, 240 watts with USB Power Delivery |",
+        "url": "https://www.digitec.ch/en/page/thunderbolt-5-is-complete-and-slightly-better-than-usb4-v20-29555"
+      },
+      {
+        "id": 2,
+        "subtopic": "USB4 v2 vs Thunderbolt 5 performance benchmarks",
+        "extracted_claim": "Thunderbolt 5 supports up to 240W of power delivery thanks to its adoption of the latest USB Power Delivery protocol via USB Extended Power Range (EPR).",
+        "raw_chunk": "Both Thunderbolt 5 and USB4 excel in power delivery, with Thunderbolt 5 supporting up to 240W thanks to its adoption of the latest USB Power Delivery protocol via USB Extended Power Range (EPR). This high wattage allows these technologies to charge a wide range of devices more efficiently, catering to the needs of users with power-hungry gadgets.",
+        "url": "https://www.cablematters.com/Blog/Thunderbolt/thunderbolt-5-vs-usb4?srsltid=AfmBOoqnZijUGoCSU8so_VFTxgn8YjTXGYu4CNZPpxpxTk43js49jdLY"
+      }
+    ]
+  }
+}
