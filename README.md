@@ -36,7 +36,7 @@ Replaces subjective LLM evaluation with a strict mathematical auditing matrix:
 
 ### 1. Clone the Repository
 ```bash
-git clone [https://github.com/niranjinii/rag-news-agent.git](https://github.com/niranjinii/rag-news-agent.git)
+git clone https://github.com/niranjinii/rag-news-agent.git
 cd rag-news-agent
 ```
 
