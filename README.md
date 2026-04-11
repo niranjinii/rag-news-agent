@@ -1,8 +1,8 @@
 # A Checkpointed Multi-Agent RAG Pipeline for Automated Technical News Writing
 
-This repository contains a "Defensive Newsroom" architecture: a stateful, multi-agent Retrieval-Augmented Generation (RAG) pipeline designed to automate the production of high-fidelity technical journalism. 
+This repository contains a Defensive Newsroom architecture: a stateful, multi-agent Retrieval-Augmented Generation (RAG) pipeline designed to automate the production of high-fidelity technical journalism. 
 
-Built with LangGraph, this system shifts the paradigm from generative volume to verifiable integrity by isolating tasks into distinct, strictly contracted agentic nodes. It features a preemptive "Rumor Kill-Switch," semantic vector reranking, and a 3-layer mathematical evaluation engine to neutralize premise hallucinations and citation drift.
+Built with LangGraph, this system shifts the paradigm from generative volume to verifiable integrity by isolating tasks into distinct, strictly contracted agentic nodes. It features a preemptive rumour kill-switch, semantic vector reranking, and a 3-layer mathematical evaluation engine to neutralize premise hallucinations and citation drift.
 
 ## System Architecture
 
@@ -10,7 +10,7 @@ The workflow executes across a Directed Acyclic Graph (DAG) managed by LangGraph
 
 ### 1. Agent 1: The Defensive Researcher (Gatekeeper & Miner)
 * **Pre-Search Validation:** Evaluates live Google snippets to detect unreleased or speculative products, triggering a hard pipeline halt ("Kill-Switch") to prevent premise hallucinations.
-* **Semantic Harvester:** Utilizes `Trafilatura` and `PyMuPDF` for web/PDF scraping, followed by a BGE Cross-Encoder (`ms-marco-MiniLM-L-6-v2`) to rerank context, cutting token usage by 90%.
+* **Semantic Harvester:** Utilizes `Trafilatura` and `PyMuPDF` for web/PDF scraping, followed by a BGE Cross-Encoder (`ms-marco-MiniLM-L-6-v2`) to rerank context.
 * **JSON Trapdoor Extraction:** Deploys Llama 3.3 70B (via Groq) to extract strict JSON facts, forcing a self-correction state if user premises contradict extracted data.
 * **Recursive Entity Resolution:** Pings the Wikidata Knowledge Graph to ensure technical claims map to real-world entities.
 
@@ -87,7 +87,7 @@ The terminal will prompt you to configure the exact parameters for the pipeline 
 
 ---
 
-## Complete Project Structure
+## Project Structure
 
 ```text
 rag-news-agent/
@@ -97,39 +97,10 @@ rag-news-agent/
 ├── state.py                 # TypedDict definitions mapping the pipeline memory contract
 ├── requirements.lock.txt    # Frozen dependency tree
 │
-├── agents/                  # Core Agent Node Logic
-│   ├── research_agent.py    # Agent 1: Gatekeeper, Scraping, and JSON Extraction
-│   ├── writer_agent.py      # Agent 2: Two-pass narrative generation and citation mapping
-│   ├── eval_dummy.py        # Agent 3: Mathematical auditing and evaluation metrics
-│   └── writer_dummy.py      # Mocking module for Agent 2 bypass testing
-│
-├── tools/                   # External APIs and Utilities
-│   ├── query_router.py      # Gemini Gatekeeper and intent classification functions
-│   ├── scraper.py           # PyMuPDF and Trafilatura integration with Safe Truncation
-│   ├── vector_store.py      # ChromaDB setup and ms-marco Cross-Encoder reranking
-│   ├── web_search.py        # Live search engine integrations
-│   └── knowledge_graph.py   # Wikidata entity resolution protocols
-│
-├── finetuning/              # Model Training and Dataset Curation
-│   ├── agent2_llama.py      # Local inference bridge for Unsloth models
-│   ├── dataset/             # Raw JSONL, cleaned production datasets, and reject logs
-│   │   └── dataset.py       # MD5 deduplication and leak-proof train/test splitting scripts
-│   └── *_output.json        # Reference baseline outputs for Agent 1 and Agent 2
-│
-├── adapters/                # Input/Output Standardization
-│   └── injected_state.py    # Logic to load static JSON files into the active PipelineState
-│
-├── research_outputs/        # Pre-computed Research Payloads
-│   ├── nvidia_b200_blackwell_gpu.json
-│   ├── wi_fi_7_vs_wi_fi_6e.json
-│   └── ...                  # Additional static testing data for evaluation calibration
-│
-├── logs/                    # System Telemetry
-│   └── agent2/              # Timestamped execution traces and JSON parsing failure logs
-│
-└── docs/                    # Technical Documentation
-    ├── DELIVERABLE_SUMMARY.md
-    ├── QUICKSTART.md
-    ├── TROUBLESHOOTING.md
-    └── SQLITE_THREADING_NOTE.md
-```
+├── agents/                  # Core Agent Node Logic (Researcher, Writer, Evaluator)
+├── tools/                   # External API integrations (Scrapers, ChromaDB, Search)
+├── finetuning/              # Dataset curation, Unsloth configs, and test outputs
+├── adapters/                # Input/Output standardization and state injection
+├── research_outputs/        # Pre-computed JSON payloads for static pipeline testing
+├── logs/                    # System telemetry and execution traces
+└── docs/                    # Technical documentation and troubleshooting guides
