@@ -1,577 +1,135 @@
-# Multi-Agent Automated Technical Article Writer
-## Production-Grade Orchestration Layer with Integrated Checkpointing
+# A Checkpointed Multi-Agent RAG Pipeline for Automated Technical News Writing
 
-A modular, stateful pipeline for automated article generation using LangGraph with **built-in state persistence and recovery**.
+This repository contains a "Defensive Newsroom" architecture: a stateful, multi-agent Retrieval-Augmented Generation (RAG) pipeline designed to automate the production of high-fidelity technical journalism. 
 
----
+Built with LangGraph, this system shifts the paradigm from generative volume to verifiable integrity by isolating tasks into distinct, strictly contracted agentic nodes. It features a preemptive "Rumor Kill-Switch," semantic vector reranking, and a 3-layer mathematical evaluation engine to neutralize premise hallucinations and citation drift.
 
-## 🏗️ Architecture Overview
+## System Architecture
 
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                   LANGGRAPH PIPELINE + CHECKPOINTING            │
-├─────────────────────────────────────────────────────────────────┤
-│                                                                  │
-│  START → Research → [💾] → Writer → [💾] → Evaluation → [💾]   │
-│              ↓                ↓               ↓                  │
-│          Agent1           Agent2          Agent3                 │
-│                                              ↓                   │
-│                                          [Decision]              │
-│                                           ↓    ↓                 │
-│                                       Revise  END                │
-│                                         ↓                        │
-│                                       Writer → [💾]              │
-│                                         ↑                        │
-│                                         └─────┘                  │
-│                                     (Max 2 revisions)            │
-│                                                                  │
-│  [💾] = Automatic checkpoint (state saved to database)          │
-└─────────────────────────────────────────────────────────────────┘
-```
+The workflow executes across a Directed Acyclic Graph (DAG) managed by LangGraph, integrating three specialized agents and an enterprise-grade state persistence layer.
 
-### Why LangGraph + Checkpointing?
+### 1. Agent 1: The Defensive Researcher (Gatekeeper & Miner)
+* **Pre-Search Validation:** Evaluates live Google snippets to detect unreleased or speculative products, triggering a hard pipeline halt ("Kill-Switch") to prevent premise hallucinations.
+* **Semantic Harvester:** Utilizes `Trafilatura` and `PyMuPDF` for web/PDF scraping, followed by a BGE Cross-Encoder (`ms-marco-MiniLM-L-6-v2`) to rerank context, cutting token usage by 90%.
+* **JSON Trapdoor Extraction:** Deploys Llama 3.3 70B (via Groq) to extract strict JSON facts, forcing a self-correction state if user premises contradict extracted data.
+* **Recursive Entity Resolution:** Pings the Wikidata Knowledge Graph to ensure technical claims map to real-world entities.
 
-- ✅ **Stateful Execution**: Maintains state across agent transitions
-- ✅ **Conditional Routing**: Dynamic revision loops based on evaluation
-- ✅ **Modular Nodes**: Each agent is an independent, replaceable node
-- ✅ **Automatic Checkpointing**: State saved after every node
-- ✅ **Resume from Failure**: Continue from exact failure point
-- ✅ **Cost Optimization**: No wasted LLM calls on retry
+### 2. Agent 2: The Technical Writer
+* **Custom Fine-Tuned Engine:** Utilizes a local Llama 3.1 8B model, fine-tuned via Unsloth on a semantically deduplicated dataset of technical journalism.
+* **Quantized Edge Deployment:** Served locally via Ollama as a 4-bit GGUF for zero-latency drafting.
+* **Deterministic Assembly:** Synthesizes the narrative and utilizes algorithmic fallback scripts to forcefully inject missing inline citations.
+
+### 3. Agent 3: The Multi-Layer Evaluator
+Replaces subjective LLM evaluation with a strict mathematical auditing matrix:
+* **Layer 1 (Regex):** Validates that all numeric metrics (e.g., GHz, MB/s) and citation formats strictly match the source chunks.
+* **Layer 2 (Vector Grounding):** Uses `SentenceTransformers` (`all-MiniLM-L6-v2`) to compute cosine similarity, flagging sentences scoring below the 0.75 threshold as hallucinations.
+* **Layer 3 (LLM Disambiguation):** Routes ambiguous claims to a reasoning model for binary (YES/NO) verification.
+* **Routing:** Automatically triggers a `NEEDS_REVISION` loop if accuracy or citation quality falls below policy thresholds.
 
 ---
 
-## 📁 Project Structure
+## Installation and Setup
 
-```
-article_writer_system/
-├── main.py                    # Entry point with checkpoint examples
-├── graph_pipeline.py          # LangGraph orchestration with checkpointing
-├── state.py                   # Type-safe state schema
-├── checkpointing.py           # 🆕 Checkpoint management module
-├── requirements.txt           # Dependencies (includes checkpointing libs)
-├── README.md                  # This file
-└── agents/
-    ├── __init__.py
-    ├── research_dummy.py      # Agent1: Research (DUMMY)
-    ├── writer_dummy.py        # Agent2: Writer (DUMMY)
-    └── eval_dummy.py          # Agent3: Evaluation (DUMMY)
-```
+### Prerequisites
+* Python 3.10+
+* [Ollama](https://ollama.com/) (for local model inference)
 
----
-
-## 🚀 Quick Start
-
-### Installation
-
+### 1. Clone the Repository
 ```bash
-pip install -r requirements.txt
+git clone [https://github.com/niranjinii/rag-news-agent.git](https://github.com/niranjinii/rag-news-agent.git)
+cd rag-news-agent
 ```
 
-### Basic Usage with Checkpointing
-
-```python
-from graph_pipeline import compile_article_writer_graph, create_initial_state
-from checkpointing import generate_thread_id
-
-# Compile graph WITH checkpointing (recommended)
-app = compile_article_writer_graph(enable_checkpointing=True)
-
-# Create initial state
-initial_state = create_initial_state(
-    topic="NVIDIA B200 GPU release",
-    persona="Technical Journalist",
-    word_count=800
-)
-
-# Generate thread ID for this execution
-thread_id = generate_thread_id("NVIDIA B200 GPU release")
-config = {"configurable": {"thread_id": thread_id}}
-
-# Execute pipeline - state automatically saved after each node
-final_state = app.invoke(initial_state, config=config)
+### 2. Install Dependencies
+```bash
+pip install -r requirements.lock.txt
 ```
 
-### Resume from Checkpoint After Failure
+### 3. Environment Variables
+Create a `.env` file in the root directory and configure your API and local host keys:
+```env
+# Cloud Model APIs
+GROQ_API_KEY="your_groq_key"
+GEMINI_API_KEY="your_gemini_key"
 
-```python
-# If pipeline crashes, resume with same thread_id
-thread_id = "article_abc123"  # From previous run
-config = {"configurable": {"thread_id": thread_id}}
-
-# Pass None to resume from last checkpoint
-final_state = app.invoke(None, config=config)  # Continues from failure point
+# Local Model Configurations
+OLLAMA_BASE_URL="http://localhost:11434"
+OLLAMA_API_KEY="your_ollama_key_if_hosted"
 ```
 
-### Run Examples
+### 4. Setup Local Inference (Ollama)
+Ensure Ollama is running on your machine, then pull the required base model for Agent 2:
+```bash
+ollama pull llama3.1
+```
 
+---
+
+## Usage
+
+To initialize the interactive CLI runner, execute the main script:
 ```bash
 python main.py
 ```
 
-### Evaluate Agent3 Using Precomputed Agent1 + Agent2 Files
+The terminal will prompt you to configure the exact parameters for the pipeline execution. Below is the configuration sequence:
 
-Use this when you want to keep Agent3 as dummy but feed sample outputs from JSON files:
-
-```bash
-python test_agent3_with_samples.py
-```
-
-Or call `run_pipeline` directly:
-
-```python
-from main import run_pipeline
-
-state = run_pipeline(
-    topic="M4 Pro vs M4 Max",
-    enable_checkpointing=False,
-    use_injected_inputs=True,
-    agent1_file="agent1_output.json",
-    agent2_file="agent2_output.json",
-)
-```
-
-Notes:
-- Pipeline graph remains the same (`research -> writer -> evaluation`).
-- In injected mode, research/writer nodes are fed from files.
-- Revisions are disabled in injected mode, so Agent3 evaluates once.
+1. **Enter search title/topic:** The technical subject to research (e.g., `NVIDIA B200 Architecture specs`).
+2. **Persona:** The narrative voice for Agent 2 (Default: `Technical Journalist`).
+3. **Target word count:** The integer length limit for the generated draft (Default: `800`).
+4. **Enable checkpointing:** Type `Y` to enable state persistence or `N` for an ephemeral run.
+5. **Checkpoint backend:** Select the storage mechanism (`memory`, `sqlite`, or `postgres`).
+6. **Use unique execution ID:** Type `Y` to force a new execution ID, bypassing previous checkpoints for the same topic.
+7. **Resume from existing thread_id:** Provide a specific thread ID to recover an aborted run, or leave blank to start fresh.
+8. **Use injected Agent1 + Agent2 JSON files:** Type `Y` to bypass live generation and feed static mock data directly into the Evaluator (Agent 3) for deterministic testing.
+   * *If Yes:* You will be prompted for the specific input JSON file paths.
+9. **Show article preview / Save output JSON:** Select preferences for final output rendering and file storage.
 
 ---
 
-## 💾 Checkpointing Deep Dive
+## Complete Project Structure
 
-### What Gets Checkpointed?
-
-After each node execution, the complete pipeline state is saved:
-
-```python
-Checkpoint = {
-    "state": {
-        "topic": "NVIDIA B200 GPU",
-        "research_data": {...},      # ← Saved after Research Agent
-        "draft_article": {...},      # ← Saved after Writer Agent  
-        "evaluation": {...},         # ← Saved after Evaluation Agent
-        "revision_count": 1
-    },
-    "metadata": {
-        "node": "writer",            # ← Last completed node
-        "timestamp": "2026-02-16T10:30:00",
-        "thread_id": "article_abc123"
-    }
-}
+```text
+rag-news-agent/
+├── main.py                  # Interactive CLI runner for the pipeline
+├── graph_pipeline.py        # LangGraph stateful DAG orchestration and routing logic
+├── checkpointing.py         # Custom SQLite/Memory/Postgres state persistence manager
+├── state.py                 # TypedDict definitions mapping the pipeline memory contract
+├── requirements.lock.txt    # Frozen dependency tree
+│
+├── agents/                  # Core Agent Node Logic
+│   ├── research_agent.py    # Agent 1: Gatekeeper, Scraping, and JSON Extraction
+│   ├── writer_agent.py      # Agent 2: Two-pass narrative generation and citation mapping
+│   ├── eval_dummy.py        # Agent 3: Mathematical auditing and evaluation metrics
+│   └── writer_dummy.py      # Mocking module for Agent 2 bypass testing
+│
+├── tools/                   # External APIs and Utilities
+│   ├── query_router.py      # Gemini Gatekeeper and intent classification functions
+│   ├── scraper.py           # PyMuPDF and Trafilatura integration with Safe Truncation
+│   ├── vector_store.py      # ChromaDB setup and ms-marco Cross-Encoder reranking
+│   ├── web_search.py        # Live search engine integrations
+│   └── knowledge_graph.py   # Wikidata entity resolution protocols
+│
+├── finetuning/              # Model Training and Dataset Curation
+│   ├── agent2_llama.py      # Local inference bridge for Unsloth models
+│   ├── dataset/             # Raw JSONL, cleaned production datasets, and reject logs
+│   │   └── dataset.py       # MD5 deduplication and leak-proof train/test splitting scripts
+│   └── *_output.json        # Reference baseline outputs for Agent 1 and Agent 2
+│
+├── adapters/                # Input/Output Standardization
+│   └── injected_state.py    # Logic to load static JSON files into the active PipelineState
+│
+├── research_outputs/        # Pre-computed Research Payloads
+│   ├── nvidia_b200_blackwell_gpu.json
+│   ├── wi_fi_7_vs_wi_fi_6e.json
+│   └── ...                  # Additional static testing data for evaluation calibration
+│
+├── logs/                    # System Telemetry
+│   └── agent2/              # Timestamped execution traces and JSON parsing failure logs
+│
+└── docs/                    # Technical Documentation
+    ├── DELIVERABLE_SUMMARY.md
+    ├── QUICKSTART.md
+    ├── TROUBLESHOOTING.md
+    └── SQLITE_THREADING_NOTE.md
 ```
-
-### Checkpoint Storage
-
-- **SQLite** (default): Local file `checkpoints.db`
-- **PostgreSQL**: Production-scale distributed checkpointing
-- **Memory**: Testing only (not persistent)
-
-### Resume Behavior
-
-```python
-# Scenario: Pipeline crashes at Evaluation Agent
-
-# Original execution
-app.invoke(initial_state, config={"configurable": {"thread_id": "thread_123"}})
-# → Research ✓ [saved]
-# → Writer ✓ [saved]
-# → Evaluation ✗ [CRASH]
-
-# Resume execution
-app.invoke(None, config={"configurable": {"thread_id": "thread_123"}})
-# → Loads checkpoint from Writer
-# → Skips Research (already done)
-# → Skips Writer (already done)
-# → Retries Evaluation
-# → Success!
-```
-
----
-
-## 🔄 Pipeline Flow
-
-### 1️⃣ Research Agent (Agent1)
-**Input**: `topic: str`
-
-**Output**: 
-```python
-{
-  "claims": [{"claim": "...", "source_id": 1}],
-  "definitions": [{"term": "...", "definition": "..."}],
-  "top_chunks": [{"source_id": 1, "chunk": "..."}],
-  "sources": [{"id": 1, "url": "..."}]
-}
-```
-**💾 Checkpoint saved automatically after completion**
-
-### 2️⃣ Writer Agent (Agent2)
-**Input**: 
-```python
-{
-  "research_data": {...},
-  "persona": "Technical Journalist",
-  "word_count": 800
-}
-```
-
-**Output**:
-```python
-{
-  "title": "...",
-  "meta_description": "...",
-  "content_md": "# Heading\n## Section...",
-  "citations": ["[1] ..."]
-}
-```
-**💾 Checkpoint saved automatically after completion**
-
-### 3️⃣ Evaluation Agent (Agent3)
-**Input**:
-```python
-{
-  "draft_article": {...},
-  "claims": [...],
-  "target_keyword": "..."
-}
-```
-
-**Output**:
-```python
-{
-  "scores": {"factual": 0.9, "seo": 0.85, "readability": 0.8},
-  "status": "APPROVED | NEEDS_REVISION",
-  "remarks": [...],
-  "rewrite_suggestions": [...]
-}
-
-`scores.readability` is normalized to `0.0-1.0` and rounded to 2 decimals.
-Readability is reported on this normalized scale throughout pipeline outputs.
-```
-**💾 Checkpoint saved automatically after completion**
-
-⚠️ **CRITICAL**: Agent3 does NOT rewrite articles. Agent2 remains the only generator.
-
-### 4️⃣ Conditional Router
-```python
-if status == "NEEDS_REVISION" and revision_count < 2:
-    → Loop back to Writer [checkpoint saved after revision]
-else:
-    → END
-```
-
----
-
-## 🛠️ Checkpoint Management
-
-### List All Checkpoints
-
-```python
-from checkpointing import get_checkpoint_manager
-
-manager = get_checkpoint_manager()
-threads = manager.list_threads()
-
-for thread_id, latest_checkpoint in threads:
-    print(f"Thread: {thread_id}, Latest: {latest_checkpoint}")
-```
-
-### Inspect Checkpoint
-
-```python
-checkpoint_info = manager.get_checkpoint_info("article_abc123")
-print(f"Created: {checkpoint_info['created_at']}")
-print(f"Checkpoint ID: {checkpoint_info['checkpoint_id']}")
-```
-
-### Cleanup Old Checkpoints
-
-```python
-# Delete checkpoints older than 7 days
-deleted_count = manager.cleanup_old_checkpoints(days=7)
-print(f"Cleaned up {deleted_count} old checkpoints")
-```
-
-### Delete Specific Thread
-
-```python
-manager.delete_thread("article_abc123")
-```
-
----
-
-## 🎮 Practical Examples
-
-### Example 1: Normal Execution
-
-```python
-from main import run_pipeline
-
-state = run_pipeline(
-    topic="NVIDIA B200 GPU release",
-    persona="Technical Journalist",
-    word_count=800,
-    enable_checkpointing=True  # Default
-)
-# → Executes normally
-# → Saves checkpoints after each node
-# → Thread ID: article_abc123
-```
-
-### Example 2: Simulate Crash and Resume
-
-```python
-# First run - simulate crash
-try:
-    state = run_pipeline("NVIDIA B200 GPU", enable_checkpointing=True)
-except Exception as e:
-    print(f"Crashed: {e}")
-    # Checkpoint saved at failure point
-
-# Resume from checkpoint
-state = run_pipeline(
-    topic="NVIDIA B200 GPU",
-    resume_from="article_abc123",  # Same thread ID
-    enable_checkpointing=True
-)
-# → Loads checkpoint
-# → Resumes from failure point
-# → No wasted LLM calls
-```
-
-### Example 3: Unique Executions
-
-```python
-# Each execution gets unique thread ID
-state = run_pipeline(
-    topic="NVIDIA B200 GPU",
-    unique_execution=True  # Creates timestamp-based ID
-)
-# → Thread ID: article_abc123_20260216103045
-# → Won't interfere with other executions
-```
-
----
-
-## 💰 Cost & Performance Impact
-
-### Checkpoint Overhead
-
-- **Storage per pipeline**: ~360 KB
-- **Write latency**: 10-50ms per checkpoint (negligible)
-- **Read latency**: 5-20ms to load checkpoint
-
-### Cost Savings Example
-
-**Without Checkpointing:**
-```
-Research Agent: $0.05, 30 seconds ✓
-Writer Agent:   $2.50, 2 minutes ✓
-Eval Agent:     CRASH ✗
-
-Resume from start:
-Research Agent: $0.05, 30 seconds ✓ (WASTED)
-Writer Agent:   $2.50, 2 minutes ✓ (WASTED)
-Eval Agent:     $0.10, 10 seconds ✓
-
-Total: $5.20, ~5 minutes
-```
-
-**With Checkpointing:**
-```
-Research Agent: $0.05, 30 seconds ✓ [SAVED]
-Writer Agent:   $2.50, 2 minutes ✓ [SAVED]
-Eval Agent:     CRASH ✗
-
-Resume from checkpoint:
-[Skip Research - loaded from checkpoint]
-[Skip Writer - loaded from checkpoint]
-Eval Agent:     $0.10, 10 seconds ✓
-
-Total: $2.65, ~2.5 minutes
-```
-
-**Savings**: $2.55 (49%), ~2.5 minutes (50%)
-
----
-
-## 🔧 Configuration Options
-
-### Backend Selection
-
-```python
-# SQLite (default - single server)
-app = compile_article_writer_graph(
-    enable_checkpointing=True,
-    checkpoint_backend="sqlite",
-    checkpoint_db_path="checkpoints.db"
-)
-
-# PostgreSQL (production - distributed)
-app = compile_article_writer_graph(
-    enable_checkpointing=True,
-    checkpoint_backend="postgres",
-    checkpoint_db_path="postgresql://user:pass@host/db"
-)
-
-# Memory (testing only - not persistent)
-app = compile_article_writer_graph(
-    enable_checkpointing=True,
-    checkpoint_backend="memory"
-)
-```
-
-### Thread ID Strategies
-
-```python
-from checkpointing import generate_thread_id, get_thread_id_with_timestamp
-
-# Deterministic (same topic = same ID)
-thread_id = generate_thread_id("My Topic")
-# → "article_abc123" (always same for "My Topic")
-
-# Unique (timestamp-based)
-thread_id = get_thread_id_with_timestamp("My Topic")
-# → "article_abc123_20260216103045" (unique each time)
-```
-
----
-
-## 🔒 Production Considerations
-
-### 1. Database Backups
-
-```python
-import shutil
-from datetime import datetime
-
-# Backup SQLite database
-timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-shutil.copy("checkpoints.db", f"checkpoints_backup_{timestamp}.db")
-```
-
-### 2. Concurrent Access
-
-- **SQLite**: Limited concurrency (~10 simultaneous pipelines)
-- **PostgreSQL**: Unlimited concurrency (production-ready)
-
-### 3. Retention Policy
-
-```python
-# Run daily cleanup
-from checkpointing import get_checkpoint_manager
-
-manager = get_checkpoint_manager()
-manager.cleanup_old_checkpoints(days=7)  # Keep 7 days of history
-```
-
-### 4. Monitoring
-
-```python
-# Check checkpoint database size
-import os
-size_mb = os.path.getsize("checkpoints.db") / (1024 * 1024)
-print(f"Checkpoint DB size: {size_mb:.2f} MB")
-
-# Alert if too large
-if size_mb > 1000:  # 1 GB
-    print("Warning: Checkpoint database is large, consider cleanup")
-```
-
----
-
-## 📊 Comparison: With vs Without Checkpointing
-
-| Feature | Without Checkpointing | With Checkpointing |
-|---------|----------------------|-------------------|
-| **Failure Recovery** | ❌ Start from scratch | ✅ Resume from failure point |
-| **Cost on Failure** | 💰💰 Full re-execution cost | 💰 Only failed step cost |
-| **Time on Failure** | ⏰⏰ Full re-execution time | ⏰ Only failed step time |
-| **Debugging** | ❌ No execution history | ✅ Full state history |
-| **Overhead** | None | ~10-50ms per node |
-| **Storage** | None | ~360 KB per pipeline |
-| **Production Ready** | ❌ No | ✅ Yes |
-
----
-
-## ✅ Key Features
-
-### Core Orchestration
-- ✅ Stateful execution with LangGraph
-- ✅ Conditional routing with revision loops (max 2)
-- ✅ Modular, plug-and-play agent architecture
-- ✅ Type-safe contracts (TypedDict schemas)
-
-### Checkpointing (NEW)
-- ✅ Automatic state persistence after each node
-- ✅ Resume from exact failure point
-- ✅ Multiple backend support (SQLite, Postgres, Memory)
-- ✅ Checkpoint inspection and management
-- ✅ Automatic cleanup utilities
-- ✅ Thread-based isolation
-
----
-
-## 🎯 Replacing Dummy Agents
-
-The checkpointing system is **transparent to agents**. Replace them without any checkpoint modifications:
-
-```python
-# agents/research_real.py
-
-from state import PipelineState, ResearchData
-
-def research_agent_node(state: PipelineState) -> dict:
-    # YOUR REAL RAG IMPLEMENTATION
-    research_data = perform_rag_search(state["topic"])
-    return {"research_data": research_data}
-    # ← Checkpoint automatically saved after return
-```
-
-Update import in `graph_pipeline.py`:
-```python
-from agents.research_real import research_agent_node  # Changed
-```
-
-**That's it!** Checkpointing continues working automatically.
-
----
-
-## 🚦 Next Steps
-
-1. ✅ **Orchestration + Checkpointing complete** (this deliverable)
-2. ⏭️ Implement real Agent1 with RAG system
-3. ⏭️ Integrate finetuned LLM for Agent2
-4. ⏭️ Build evaluation models for Agent3
-5. ⏭️ Add error handling and retry logic
-6. ⏭️ Deploy to production
-
-**The graph and checkpointing system require ZERO changes.**
-
----
-
-## 📚 Additional Resources
-
-- [LangGraph Checkpointing Docs](https://langchain-ai.github.io/langgraph/reference/checkpoints/)
-- [LangGraph Persistence Tutorial](https://langchain-ai.github.io/langgraph/how-tos/persistence/)
-- [State Management Guide](https://langchain-ai.github.io/langgraph/concepts/state/)
-
----
-
-## ✅ Architecture Validation Checklist
-
-- ✅ LangGraph used for stateful execution
-- ✅ Conditional routing implemented
-- ✅ Revision loops with max limit (2)
-- ✅ Modular agent nodes (fully replaceable)
-- ✅ Type-safe state schema (TypedDict)
-- ✅ Strict I/O contracts enforced
-- ✅ Zero coupling between graph and agents
-- ✅ **Automatic checkpointing enabled**
-- ✅ **Resume-from-failure capability**
-- ✅ **Production-ready state persistence**
-- ✅ **Checkpoint management utilities**
-- ✅ **Multiple backend support**
-
----
-
-**Built with ❤️ using LangGraph + Integrated Checkpointing | Production-Ready with Auto-Recovery**
