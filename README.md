@@ -9,7 +9,7 @@ Built with LangGraph, this system shifts the paradigm from generative volume to 
 The workflow executes across a Directed Acyclic Graph (DAG) managed by LangGraph, integrating three specialized agents and an enterprise-grade state persistence layer.
 
 ### 1. Agent 1: The Defensive Researcher (Gatekeeper & Miner)
-* **Pre-Search Validation:** Evaluates live Google snippets to detect unreleased or speculative products, triggering a hard pipeline halt ("Kill-Switch") to prevent premise hallucinations.
+* **Pre-Search Validation:** Evaluates live Google snippets to detect unreleased or speculative products, triggering a hard pipeline halt to prevent premise hallucinations.
 * **Semantic Harvester:** Utilizes `Trafilatura` and `PyMuPDF` for web/PDF scraping, followed by a BGE Cross-Encoder (`ms-marco-MiniLM-L-6-v2`) to rerank context.
 * **JSON Trapdoor Extraction:** Deploys Llama 3.3 70B (via Groq) to extract strict JSON facts, forcing a self-correction state if user premises contradict extracted data.
 * **Recursive Entity Resolution:** Pings the Wikidata Knowledge Graph to ensure technical claims map to real-world entities.
@@ -49,12 +49,13 @@ pip install -r requirements.lock.txt
 Create a `.env` file in the root directory and configure your API and local host keys:
 ```env
 # Cloud Model APIs
-GROQ_API_KEY="your_groq_key"
-GEMINI_API_KEY="your_gemini_key"
+GROQ_API_KEY=your_groq_key
+GEMINI_API_KEY=your_gemini_key
+SERPER_API_KEY=your_serper_key
 
 # Local Model Configurations
-OLLAMA_BASE_URL="http://localhost:11434"
-OLLAMA_API_KEY="your_ollama_key_if_hosted"
+OLLAMA_BASE_URL=http://localhost:11434
+OLLAMA_API_KEY=your_ollama_key_if_hosted
 ```
 
 ### 4. Setup Local Inference (Ollama)
