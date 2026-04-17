@@ -102,6 +102,6 @@ rag-news-agent/
 ├── tools/                   # External API integrations (Scrapers, ChromaDB, Search)
 ├── finetuning/              # Dataset curation, Unsloth configs, and test outputs
 ├── adapters/                # Input/Output standardization and state injection
-├── research_outputs/        # Pre-computed JSON payloads for static pipeline testing
+├── research_outputs/        # Agent 1's JSON outputs from each run
 ├── logs/                    # System telemetry and execution traces
 └── docs/                    # Technical documentation and troubleshooting guides
