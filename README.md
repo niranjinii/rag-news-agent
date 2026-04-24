@@ -67,7 +67,7 @@ Keep that terminal running in the background.
 
 **Import the Fine-Tuned Model:**
 Agent 2 requires our custom fine-tuned Llama 3.1 8B model to function correctly. 
-1. **Download the model:** [(https://drive.google.com/file/d/18Xrz0wApQtRNI8s46XVSaFV3y0RmBD8W/view?usp=sharing)]
+1. **Download the model:** [https://drive.google.com/file/d/18Xrz0wApQtRNI8s46XVSaFV3y0RmBD8W/view?usp=sharing]
 2. Place the downloaded `.gguf` file in a known folder.
 3. In that same folder, create a text file named `Modelfile` (no file extension) with the following single line:
    ```text
@@ -78,7 +78,6 @@ Agent 2 requires our custom fine-tuned Llama 3.1 8B model to function correctly.
    ollama create llama3.1 -f Modelfile
    ```
 *(Note: Naming it `llama3.1` during creation ensures your existing pipeline code can call it seamlessly without needing to update the model string in the Python scripts).*
-```
 ```
 
 The terminal will prompt you to configure the exact parameters for the pipeline execution. Below is the configuration sequence:
