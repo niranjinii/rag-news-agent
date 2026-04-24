@@ -59,18 +59,26 @@ OLLAMA_API_KEY=your_ollama_key_if_hosted
 ```
 
 ### 4. Setup Local Inference (Ollama)
-Ensure Ollama is running on your machine, then pull the required base model for Agent 2:
+Open a new, separate terminal window and start the Ollama server:
 ```bash
-ollama pull llama3.1
+ollama serve
 ```
+Keep that terminal running in the background. 
 
----
-
-## Usage
-
-To initialize the interactive CLI runner, execute the main script:
-```bash
-python main.py
+**Import the Fine-Tuned Model:**
+Agent 2 requires our custom fine-tuned Llama 3.1 8B model to function correctly. 
+1. **Download the model:** [(https://drive.google.com/file/d/18Xrz0wApQtRNI8s46XVSaFV3y0RmBD8W/view?usp=sharing)]
+2. Place the downloaded `.gguf` file in a known folder.
+3. In that same folder, create a text file named `Modelfile` (no file extension) with the following single line:
+   ```text
+   FROM ./<name-of-your-downloaded-file>.gguf
+   ```
+4. Open a terminal in that folder and build the custom model inside Ollama by running:
+   ```bash
+   ollama create llama3.1 -f Modelfile
+   ```
+*(Note: Naming it `llama3.1` during creation ensures your existing pipeline code can call it seamlessly without needing to update the model string in the Python scripts).*
+```
 ```
 
 The terminal will prompt you to configure the exact parameters for the pipeline execution. Below is the configuration sequence:
